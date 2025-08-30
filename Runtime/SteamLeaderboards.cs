@@ -31,6 +31,7 @@ namespace Minimoo.SteamWork
 #endif
         }
 
+#if UNITY_STANDALONE
         /// <summary>
         /// 리더보드에 점수를 업로드합니다.
         /// </summary>
@@ -40,7 +41,6 @@ namespace Minimoo.SteamWork
         /// <returns>업로드 성공 여부</returns>
         public static async UniTask<bool> UploadScore(string leaderboardName, int score, ELeaderboardUploadScoreMethod method = ELeaderboardUploadScoreMethod.k_ELeaderboardUploadScoreMethodKeepBest)
         {
-#if UNITY_STANDALONE
             if (!isInitialized)
             {
                 D.Error("SteamLeaderboards is not initialized.");
@@ -81,11 +81,10 @@ namespace Minimoo.SteamWork
                 D.Error($"Exception while uploading score: {e.Message}");
                 return false;
             }
-#else
-            return false;
-#endif
         }
+#endif
 
+#if UNITY_STANDALONE
         /// <summary>
         /// 리더보드에서 특정 범위의 엔트리를 가져옵니다.
         /// </summary>
@@ -95,7 +94,6 @@ namespace Minimoo.SteamWork
         /// <returns>리더보드 엔트리 목록</returns>
         public static async UniTask<List<LeaderboardEntry>> GetLeaderboardEntries(string leaderboardName, int start = 1, int end = 10)
         {
-#if UNITY_STANDALONE
             var entries = new List<LeaderboardEntry>();
 
             if (!isInitialized)
@@ -153,11 +151,10 @@ namespace Minimoo.SteamWork
             }
 
             return entries;
-#else
-            return new List<LeaderboardEntry>();
-#endif
         }
+#endif
 
+#if UNITY_STANDALONE
         /// <summary>
         /// 친구들의 리더보드 엔트리를 가져옵니다.
         /// </summary>
@@ -223,7 +220,9 @@ namespace Minimoo.SteamWork
 
             return entries;
         }
+#endif
 
+#if UNITY_STANDALONE
         /// <summary>
         /// 현재 사용자의 리더보드 엔트리를 가져옵니다.
         /// </summary>
@@ -282,7 +281,9 @@ namespace Minimoo.SteamWork
                 return null;
             }
         }
+#endif
 
+#if UNITY_STANDALONE
         /// <summary>
         /// 리더보드의 총 엔트리 수를 가져옵니다.
         /// </summary>
@@ -317,7 +318,9 @@ namespace Minimoo.SteamWork
                 return 0;
             }
         }
+#endif
 
+#if UNITY_STANDALONE
         /// <summary>
         /// 리더보드 정보를 가져옵니다.
         /// </summary>
@@ -368,6 +371,77 @@ namespace Minimoo.SteamWork
                 return null;
             }
         }
+#else
+        /// <summary>
+        /// 리더보드에 점수를 업로드합니다. (Steam 미사용 시)
+        /// </summary>
+        /// <param name="leaderboardName">리더보드 이름</param>
+        /// <param name="score">점수</param>
+        /// <param name="method">업로드 방식</param>
+        /// <returns>항상 false 반환</returns>
+        public static async UniTask<bool> UploadScore(string leaderboardName, int score, int method = 0)
+        {
+            D.Log($"Leaderboard upload not available on this platform: {leaderboardName}, score: {score}");
+            return false;
+        }
+
+        /// <summary>
+        /// 리더보드에서 특정 범위의 엔트리를 가져옵니다. (Steam 미사용 시)
+        /// </summary>
+        /// <param name="leaderboardName">리더보드 이름</param>
+        /// <param name="start">시작 순위 (1부터 시작)</param>
+        /// <param name="end">끝 순위</param>
+        /// <returns>빈 리스트 반환</returns>
+        public static async UniTask<List<LeaderboardEntry>> GetLeaderboardEntries(string leaderboardName, int start = 1, int end = 10)
+        {
+            D.Log($"Leaderboard entries not available on this platform: {leaderboardName}");
+            return new List<LeaderboardEntry>();
+        }
+
+        /// <summary>
+        /// 친구들의 리더보드 엔트리를 가져옵니다. (Steam 미사용 시)
+        /// </summary>
+        /// <param name="leaderboardName">리더보드 이름</param>
+        /// <returns>빈 리스트 반환</returns>
+        public static async UniTask<List<LeaderboardEntry>> GetFriendsLeaderboardEntries(string leaderboardName)
+        {
+            D.Log($"Friends leaderboard entries not available on this platform: {leaderboardName}");
+            return new List<LeaderboardEntry>();
+        }
+
+        /// <summary>
+        /// 현재 사용자의 리더보드 엔트리를 가져옵니다. (Steam 미사용 시)
+        /// </summary>
+        /// <param name="leaderboardName">리더보드 이름</param>
+        /// <returns>null 반환</returns>
+        public static async UniTask<LeaderboardEntry?> GetUserLeaderboardEntry(string leaderboardName)
+        {
+            D.Log($"User leaderboard entry not available on this platform: {leaderboardName}");
+            return null;
+        }
+
+        /// <summary>
+        /// 리더보드의 총 엔트리 수를 가져옵니다. (Steam 미사용 시)
+        /// </summary>
+        /// <param name="leaderboardName">리더보드 이름</param>
+        /// <returns>0 반환</returns>
+        public static async UniTask<int> GetLeaderboardEntryCount(string leaderboardName)
+        {
+            D.Log($"Leaderboard entry count not available on this platform: {leaderboardName}");
+            return 0;
+        }
+
+        /// <summary>
+        /// 리더보드 정보를 가져옵니다. (Steam 미사용 시)
+        /// </summary>
+        /// <param name="leaderboardName">리더보드 이름</param>
+        /// <returns>null 반환</returns>
+        public static async UniTask<LeaderboardInfo?> GetLeaderboardInfo(string leaderboardName)
+        {
+            D.Log($"Leaderboard info not available on this platform: {leaderboardName}");
+            return null;
+        }
+#endif
 
 #if UNITY_STANDALONE
         /// <summary>
@@ -397,16 +471,22 @@ namespace Minimoo.SteamWork
 #endif
     }
 
-#if UNITY_STANDALONE
     /// <summary>
     /// 리더보드 엔트리 정보를 담는 구조체
     /// </summary>
     public struct LeaderboardEntry
     {
+#if UNITY_STANDALONE
         public int Rank;
         public int Score;
         public CSteamID SteamId;
         public string UserName;
+#else
+        public int Rank;
+        public int Score;
+        public ulong SteamId; // Fallback for non-Steam platforms
+        public string UserName;
+#endif
     }
 
     /// <summary>
@@ -416,8 +496,12 @@ namespace Minimoo.SteamWork
     {
         public string Name;
         public int EntryCount;
+#if UNITY_STANDALONE
         public ELeaderboardSortMethod SortMethod;
         public ELeaderboardDisplayType DisplayType;
-    }
+#else
+        public int SortMethod; // Fallback for non-Steam platforms
+        public int DisplayType; // Fallback for non-Steam platforms
 #endif
+    }
 }
