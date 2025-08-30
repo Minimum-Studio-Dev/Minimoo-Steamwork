@@ -44,25 +44,20 @@ namespace Minimoo.SteamWork
 #endif
             }
         }
-
+#if UNITY_STANDALONE
         public CSteamID UserSteamId
         {
             get
             {
-#if UNITY_STANDALONE
                 return _userSteamId;
-#else
                 return default(CSteamID);
-#endif
             }
             private set
             {
-#if UNITY_STANDALONE
                 _userSteamId = value;
-#endif
             }
         }
-
+#endif
         public string UserName
         {
             get
