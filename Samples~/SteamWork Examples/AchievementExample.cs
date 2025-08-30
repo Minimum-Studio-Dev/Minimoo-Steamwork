@@ -1,5 +1,6 @@
 using UnityEngine;
 using Minimoo.SteamWork;
+using Minimoo;
 
 public class AchievementExample : MonoBehaviour
 {
@@ -13,7 +14,7 @@ public class AchievementExample : MonoBehaviour
 
     private void Start()
     {
-        Debug.Log("Achievement 예제 시작!");
+        D.Log("Achievement 예제 시작!");
         ShowAllAchievements();
     }
 
@@ -59,7 +60,7 @@ public class AchievementExample : MonoBehaviour
     private void IncreaseScore()
     {
         score += 10;
-        Debug.Log($"점수 증가: {score}");
+        D.Log($"점수 증가: {score}");
 
         // 점수 기반 업적 체크
         if (score >= 100 && !SteamAchievements.IsAchievementUnlocked(sampleAchievements[1]))
@@ -80,11 +81,11 @@ public class AchievementExample : MonoBehaviour
             string achievementId = sampleAchievements[index];
             if (SteamAchievements.UnlockAchievement(achievementId))
             {
-                Debug.Log($"업적 잠금 해제 성공: {achievementId}");
+                D.Log($"업적 잠금 해제 성공: {achievementId}");
             }
             else
             {
-                Debug.LogError($"업적 잠금 해제 실패: {achievementId}");
+                D.Error($"업적 잠금 해제 실패: {achievementId}");
             }
         }
     }
@@ -95,9 +96,9 @@ public class AchievementExample : MonoBehaviour
         var unlockedAchievements = SteamAchievements.GetUnlockedAchievements();
         var lockedAchievements = SteamAchievements.GetLockedAchievements();
 
-        Debug.Log($"총 업적 수: {allAchievements.Count}");
-        Debug.Log($"잠금 해제된 업적: {unlockedAchievements.Count}");
-        Debug.Log($"잠금된 업적: {lockedAchievements.Count}");
+        D.Log($"총 업적 수: {allAchievements.Count}");
+        D.Log($"잠금 해제된 업적: {unlockedAchievements.Count}");
+        D.Log($"잠금된 업적: {lockedAchievements.Count}");
 
         foreach (var achievementId in allAchievements)
         {
@@ -105,8 +106,8 @@ public class AchievementExample : MonoBehaviour
             string desc = SteamAchievements.GetAchievementDescription(achievementId);
             bool isUnlocked = SteamAchievements.IsAchievementUnlocked(achievementId);
 
-            Debug.Log($"{achievementId}: {name} - {(isUnlocked ? "잠금 해제됨" : "잠금됨")}");
-            Debug.Log($"  설명: {desc}");
+            D.Log($"{achievementId}: {name} - {(isUnlocked ? "잠금 해제됨" : "잠금됨")}");
+            D.Log($"  설명: {desc}");
         }
     }
 
@@ -114,12 +115,12 @@ public class AchievementExample : MonoBehaviour
     {
         if (SteamAchievements.ResetAllAchievements())
         {
-            Debug.Log("모든 업적 리셋됨");
+            D.Log("모든 업적 리셋됨");
             score = 0;
         }
         else
         {
-            Debug.LogError("업적 리셋 실패");
+            D.Error("업적 리셋 실패");
         }
     }
 

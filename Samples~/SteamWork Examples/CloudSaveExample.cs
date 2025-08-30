@@ -1,5 +1,6 @@
 using UnityEngine;
 using Minimoo.SteamWork;
+using Minimoo;
 
 public class CloudSaveExample : MonoBehaviour
 {
@@ -11,15 +12,15 @@ public class CloudSaveExample : MonoBehaviour
         // Cloud 저장소가 사용 가능한지 확인
         if (SteamCloudSave.IsCloudAvailable())
         {
-            Debug.Log("Steam Cloud를 사용할 수 있습니다!");
+            D.Log("Steam Cloud를 사용할 수 있습니다!");
 
             // 저장 공간 정보 확인
             var (used, total) = SteamCloudSave.GetCloudStorageInfo();
-            Debug.Log($"Cloud 저장소: {used}/{total} bytes 사용중");
+            D.Log($"Cloud 저장소: {used}/{total} bytes 사용중");
         }
         else
         {
-            Debug.LogError("Steam Cloud를 사용할 수 없습니다.");
+            D.Error("Steam Cloud를 사용할 수 없습니다.");
         }
     }
 
@@ -51,11 +52,11 @@ public class CloudSaveExample : MonoBehaviour
 
         if (SteamCloudSave.SaveFile("game_save", saveData))
         {
-            Debug.Log($"게임 데이터 저장 성공: {saveData}");
+            D.Log($"게임 데이터 저장 성공: {saveData}");
         }
         else
         {
-            Debug.LogError("게임 데이터 저장 실패!");
+            D.Error("게임 데이터 저장 실패!");
         }
     }
 
@@ -66,11 +67,11 @@ public class CloudSaveExample : MonoBehaviour
 
         if (!string.IsNullOrEmpty(loadedData))
         {
-            Debug.Log($"게임 데이터 로드 성공: {loadedData}");
+            D.Log($"게임 데이터 로드 성공: {loadedData}");
         }
         else
         {
-            Debug.LogError("게임 데이터 로드 실패 또는 파일이 존재하지 않습니다.");
+            D.Error("게임 데이터 로드 실패 또는 파일이 존재하지 않습니다.");
         }
     }
 
@@ -78,11 +79,11 @@ public class CloudSaveExample : MonoBehaviour
     {
         // Cloud에 저장된 파일 목록 표시
         var files = SteamCloudSave.GetFileList();
-        Debug.Log($"Cloud 파일 목록 ({files.Count}개):");
+        D.Log($"Cloud 파일 목록 ({files.Count}개):");
 
         foreach (var file in files)
         {
-            Debug.Log($"- {file}");
+            D.Log($"- {file}");
         }
     }
 

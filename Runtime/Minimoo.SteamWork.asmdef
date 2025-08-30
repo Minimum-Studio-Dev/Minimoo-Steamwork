@@ -2,6 +2,7 @@
     "name": "Minimoo.SteamWork",
     "rootNamespace": "Minimoo.SteamWork",
     "references": [
+        "com.minimumstudio.minimoo",
         "com.rlabrecque.steamworks.net",
         "UniTask"
     ],

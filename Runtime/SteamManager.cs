@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Steamworks;
 using UnityEngine;
+using Minimoo;
 
 namespace Minimoo.SteamWork
 {
@@ -52,7 +53,7 @@ namespace Minimoo.SteamWork
                 // Steamworks.NET 초기화
                 if (!SteamAPI.Init())
                 {
-                    Debug.LogError("Failed to initialize Steam API");
+                    D.Error("Failed to initialize Steam API");
                     IsSteamInitialized = false;
                     return;
                 }
@@ -62,7 +63,7 @@ namespace Minimoo.SteamWork
                 UserName = SteamFriends.GetPersonaName();
                 UserPersonaName = SteamFriends.GetPersonaName();
 
-                Debug.Log($"Steam initialized successfully. User: {UserPersonaName} ({UserSteamId})");
+                D.Log($"Steam initialized successfully. User: {UserPersonaName} ({UserSteamId})");
 
                 // Setup callbacks
                 SetupCallbacks();
@@ -75,7 +76,7 @@ namespace Minimoo.SteamWork
             }
             catch (Exception e)
             {
-                Debug.LogError($"Failed to initialize Steam: {e.Message}");
+                D.Error($"Failed to initialize Steam: {e.Message}");
                 IsSteamInitialized = false;
             }
         }
@@ -88,7 +89,7 @@ namespace Minimoo.SteamWork
 
         private void OnGameOverlayActivated(GameOverlayActivated_t callback)
         {
-            Debug.Log($"Steam overlay activated: {callback.m_bActive}");
+            D.Log($"Steam overlay activated: {callback.m_bActive}");
         }
 
         private void OnPersonaStateChange(PersonaStateChange_t callback)
@@ -96,7 +97,7 @@ namespace Minimoo.SteamWork
             if (callback.m_ulSteamID == UserSteamId.m_SteamID)
             {
                 UserPersonaName = SteamFriends.GetPersonaName();
-                Debug.Log($"Persona state changed: {UserPersonaName}");
+                D.Log($"Persona state changed: {UserPersonaName}");
             }
         }
 

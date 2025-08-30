@@ -1,0 +1,12 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Your rule content
+
+- var를 사용
+- .editorconfig 참조할것
+- 유니티 코드는 https://docs.unity3d.com/6000.0/Documentation/ScriptReference/index.html 스크립팅 api 참조할것
+- git 스테이지 직접 하지 말것
+- 로그 쓸때는 Minimoo 네임스페이스의 D.cs 로그 관련 기능 사용할것 using Minimoo 하자

@@ -1,5 +1,6 @@
 using UnityEngine;
 using Minimoo.SteamWork;
+using Minimoo;
 
 public class ActivityExample : MonoBehaviour
 {
@@ -11,7 +12,7 @@ public class ActivityExample : MonoBehaviour
     {
         // 초기 상태 설정
         SteamActivity.SetMenuActivity();
-        Debug.Log("Steam Activity 예제 시작 - 메뉴 상태로 설정됨");
+        D.Log("Steam Activity 예제 시작 - 메뉴 상태로 설정됨");
     }
 
     private void Update()
@@ -20,21 +21,21 @@ public class ActivityExample : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Alpha1))
         {
             SteamActivity.SetMenuActivity();
-            Debug.Log("메뉴 상태로 변경");
+            D.Log("메뉴 상태로 변경");
         }
 
         // 2 키로 게임 플레이 상태
         if (Input.GetKeyDown(KeyCode.Alpha2))
         {
             SteamActivity.SetPlayingActivity(currentLevel);
-            Debug.Log($"게임 플레이 상태로 변경 - 레벨 {currentLevel}");
+            D.Log($"게임 플레이 상태로 변경 - 레벨 {currentLevel}");
         }
 
         // 3 키로 로비 상태
         if (Input.GetKeyDown(KeyCode.Alpha3))
         {
             SteamActivity.SetLobbyActivity(playerCount, maxPlayers);
-            Debug.Log($"로비 상태로 변경 - {playerCount}/{maxPlayers}");
+            D.Log($"로비 상태로 변경 - {playerCount}/{maxPlayers}");
         }
 
         // 4 키로 커스텀 상태
@@ -47,14 +48,14 @@ public class ActivityExample : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.C))
         {
             SteamActivity.SetConnectInfo("+connect 127.0.0.1:27015");
-            Debug.Log("연결 정보 설정됨");
+            D.Log("연결 정보 설정됨");
         }
 
         // X 키로 Rich Presence 클리어
         if (Input.GetKeyDown(KeyCode.X))
         {
             SteamActivity.ClearRichPresence();
-            Debug.Log("Rich Presence 클리어됨");
+            D.Log("Rich Presence 클리어됨");
         }
 
         // F 키로 친구 목록 표시
@@ -99,13 +100,13 @@ public class ActivityExample : MonoBehaviour
         activityInfo.CustomRichPresence["character"] = "Warrior";
 
         SteamActivity.SetGameActivity(activityInfo);
-        Debug.Log("커스텀 Activity 설정됨");
+        D.Log("커스텀 Activity 설정됨");
     }
 
     private void ShowFriendsList()
     {
         var friends = SteamActivity.GetFriendList();
-        Debug.Log($"친구 목록 ({friends.Count}명):");
+        D.Log($"친구 목록 ({friends.Count}명):");
 
         foreach (var friendId in friends)
         {
@@ -113,10 +114,10 @@ public class ActivityExample : MonoBehaviour
             string status = SteamActivity.GetFriendGameStatus(friendId);
             string richPresence = SteamActivity.GetFriendRichPresence(friendId, "status");
 
-            Debug.Log($"{name}: {status}");
+            D.Log($"{name}: {status}");
             if (!string.IsNullOrEmpty(richPresence))
             {
-                Debug.Log($"  Rich Presence: {richPresence}");
+                D.Log($"  Rich Presence: {richPresence}");
             }
         }
     }

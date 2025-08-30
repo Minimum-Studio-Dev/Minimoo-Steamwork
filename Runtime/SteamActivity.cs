@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Steamworks;
 using UnityEngine;
 using Cysharp.Threading.Tasks;
+using Minimoo;
 
 namespace Minimoo.SteamWork
 {
@@ -20,12 +21,12 @@ namespace Minimoo.SteamWork
         {
             if (!SteamManager.Instance.IsSteamInitialized)
             {
-                Debug.LogError("Steam is not initialized. Cannot initialize SteamActivity.");
+                D.Error("Steam is not initialized. Cannot initialize SteamActivity.");
                 return;
             }
 
             isInitialized = true;
-            Debug.Log("SteamActivity initialized successfully.");
+            D.Log("SteamActivity initialized successfully.");
         }
 
         /// <summary>
@@ -39,11 +40,11 @@ namespace Minimoo.SteamWork
             try
             {
                 SteamFriends.SetRichPresence(RP_STATUS, status);
-                Debug.Log($"Steam activity status set: {status}");
+                D.Log($"Steam activity status set: {status}");
             }
             catch (Exception e)
             {
-                Debug.LogError($"Failed to set status: {e.Message}");
+                D.Error($"Failed to set status: {e.Message}");
             }
         }
 
@@ -58,11 +59,11 @@ namespace Minimoo.SteamWork
             try
             {
                 SteamFriends.SetRichPresence(RP_CONNECT, connectString);
-                Debug.Log($"Steam connect info set: {connectString}");
+                D.Log($"Steam connect info set: {connectString}");
             }
             catch (Exception e)
             {
-                Debug.LogError($"Failed to set connect info: {e.Message}");
+                D.Error($"Failed to set connect info: {e.Message}");
             }
         }
 
@@ -77,11 +78,11 @@ namespace Minimoo.SteamWork
             try
             {
                 SteamFriends.SetRichPresence(RP_STEAM_DISPLAY, displayText);
-                Debug.Log($"Steam display text set: {displayText}");
+                D.Log($"Steam display text set: {displayText}");
             }
             catch (Exception e)
             {
-                Debug.LogError($"Failed to set display text: {e.Message}");
+                D.Error($"Failed to set display text: {e.Message}");
             }
         }
 
@@ -97,11 +98,11 @@ namespace Minimoo.SteamWork
             try
             {
                 SteamFriends.SetRichPresence(key, value);
-                Debug.Log($"Steam rich presence set: {key} = {value}");
+                D.Log($"Steam rich presence set: {key} = {value}");
             }
             catch (Exception e)
             {
-                Debug.LogError($"Failed to set rich presence: {e.Message}");
+                D.Error($"Failed to set rich presence: {e.Message}");
             }
         }
 
@@ -115,11 +116,11 @@ namespace Minimoo.SteamWork
             try
             {
                 SteamFriends.ClearRichPresence();
-                Debug.Log("Steam rich presence cleared");
+                D.Log("Steam rich presence cleared");
             }
             catch (Exception e)
             {
-                Debug.LogError($"Failed to clear rich presence: {e.Message}");
+                D.Error($"Failed to clear rich presence: {e.Message}");
             }
         }
 
@@ -138,18 +139,18 @@ namespace Minimoo.SteamWork
                 bool result = SteamFriends.InviteUserToGame(friendCSteamID, connectString);
                 if (result)
                 {
-                    Debug.Log($"Game invitation sent to friend: {friendCSteamID}");
+                    D.Log($"Game invitation sent to friend: {friendCSteamID}");
                 }
                 else
                 {
-                    Debug.LogError($"Failed to send game invitation to friend: {friendCSteamID}");
+                    D.Error($"Failed to send game invitation to friend: {friendCSteamID}");
                 }
 
                 return result;
             }
             catch (Exception e)
             {
-                Debug.LogError($"Exception while inviting friend: {e.Message}");
+                D.Error($"Exception while inviting friend: {e.Message}");
                 return false;
             }
         }
@@ -179,7 +180,7 @@ namespace Minimoo.SteamWork
             }
             catch (Exception e)
             {
-                Debug.LogError($"Exception while getting friend list: {e.Message}");
+                D.Error($"Exception while getting friend list: {e.Message}");
             }
 
             return friends;
@@ -200,7 +201,7 @@ namespace Minimoo.SteamWork
             }
             catch (Exception e)
             {
-                Debug.LogError($"Exception while getting friend name: {e.Message}");
+                D.Error($"Exception while getting friend name: {e.Message}");
                 return string.Empty;
             }
         }
@@ -229,7 +230,7 @@ namespace Minimoo.SteamWork
             }
             catch (Exception e)
             {
-                Debug.LogError($"Exception while getting friend game status: {e.Message}");
+                D.Error($"Exception while getting friend game status: {e.Message}");
                 return string.Empty;
             }
         }
@@ -250,7 +251,7 @@ namespace Minimoo.SteamWork
             }
             catch (Exception e)
             {
-                Debug.LogError($"Exception while getting friend rich presence: {e.Message}");
+                D.Error($"Exception while getting friend rich presence: {e.Message}");
                 return string.Empty;
             }
         }
@@ -270,7 +271,7 @@ namespace Minimoo.SteamWork
             }
             catch (Exception e)
             {
-                Debug.LogError($"Exception while getting friend persona state: {e.Message}");
+                D.Error($"Exception while getting friend persona state: {e.Message}");
                 return EPersonaState.k_EPersonaStateOffline;
             }
         }
@@ -302,11 +303,11 @@ namespace Minimoo.SteamWork
                     }
                 }
 
-                Debug.Log($"Game activity set: {activityInfo.Status}");
+                D.Log($"Game activity set: {activityInfo.Status}");
             }
             catch (Exception e)
             {
-                Debug.LogError($"Failed to set game activity: {e.Message}");
+                D.Error($"Failed to set game activity: {e.Message}");
             }
         }
 

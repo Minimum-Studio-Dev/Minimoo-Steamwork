@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Steamworks;
 using UnityEngine;
 using Cysharp.Threading.Tasks;
+using Minimoo;
 
 namespace Minimoo.SteamWork
 {
@@ -15,12 +16,12 @@ namespace Minimoo.SteamWork
         {
             if (!SteamManager.Instance.IsSteamInitialized)
             {
-                Debug.LogError("Steam is not initialized. Cannot initialize SteamLogin.");
+                D.Error("Steam is not initialized. Cannot initialize SteamLogin.");
                 return;
             }
 
             isInitialized = true;
-            Debug.Log("SteamLogin initialized successfully.");
+            D.Log("SteamLogin initialized successfully.");
         }
 
         /// <summary>
@@ -67,7 +68,7 @@ namespace Minimoo.SteamWork
             }
             catch (Exception e)
             {
-                Debug.LogError($"Failed to get user avatar: {e.Message}");
+                D.Error($"Failed to get user avatar: {e.Message}");
             }
 
             return null;
@@ -151,7 +152,7 @@ namespace Minimoo.SteamWork
             }
             catch (Exception e)
             {
-                Debug.LogError($"Failed to check game ownership: {e.Message}");
+                D.Error($"Failed to check game ownership: {e.Message}");
                 return false;
             }
         }
@@ -169,7 +170,7 @@ namespace Minimoo.SteamWork
             }
             catch (Exception e)
             {
-                Debug.LogError($"Failed to get build ID: {e.Message}");
+                D.Error($"Failed to get build ID: {e.Message}");
                 return 0;
             }
         }

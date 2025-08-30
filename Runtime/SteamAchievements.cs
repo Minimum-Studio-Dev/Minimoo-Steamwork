@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Steamworks;
 using UnityEngine;
 using Cysharp.Threading.Tasks;
+using Minimoo;
 
 namespace Minimoo.SteamWork
 {
@@ -16,13 +17,13 @@ namespace Minimoo.SteamWork
         {
             if (!SteamManager.Instance.IsSteamInitialized)
             {
-                Debug.LogError("Steam is not initialized. Cannot initialize SteamAchievements.");
+                D.Error("Steam is not initialized. Cannot initialize SteamAchievements.");
                 return;
             }
 
             isInitialized = true;
             CacheAchievements();
-            Debug.Log("SteamAchievements initialized successfully.");
+            D.Log("SteamAchievements initialized successfully.");
         }
 
         private static void CacheAchievements()
@@ -44,11 +45,11 @@ namespace Minimoo.SteamWork
                     }
                 }
 
-                Debug.Log($"Cached {achievementCache.Count} achievements");
+                D.Log($"Cached {achievementCache.Count} achievements");
             }
             catch (Exception e)
             {
-                Debug.LogError($"Failed to cache achievements: {e.Message}");
+                D.Error($"Failed to cache achievements: {e.Message}");
             }
         }
 
@@ -67,21 +68,21 @@ namespace Minimoo.SteamWork
                 if (result)
                 {
                     SteamUserStats.StoreStats();
-                    Debug.Log($"Achievement unlocked: {achievementId}");
+                    D.Log($"Achievement unlocked: {achievementId}");
 
                     // 캐시 업데이트
                     achievementCache[achievementId] = true;
                 }
                 else
                 {
-                    Debug.LogError($"Failed to unlock achievement: {achievementId}");
+                    D.Error($"Failed to unlock achievement: {achievementId}");
                 }
 
                 return result;
             }
             catch (Exception e)
             {
-                Debug.LogError($"Exception while unlocking achievement: {e.Message}");
+                D.Error($"Exception while unlocking achievement: {e.Message}");
                 return false;
             }
         }
@@ -101,21 +102,21 @@ namespace Minimoo.SteamWork
                 if (result)
                 {
                     SteamUserStats.StoreStats();
-                    Debug.Log($"Achievement locked: {achievementId}");
+                    D.Log($"Achievement locked: {achievementId}");
 
                     // 캐시 업데이트
                     achievementCache[achievementId] = true;
                 }
                 else
                 {
-                    Debug.LogError($"Failed to lock achievement: {achievementId}");
+                    D.Error($"Failed to lock achievement: {achievementId}");
                 }
 
                 return result;
             }
             catch (Exception e)
             {
-                Debug.LogError($"Exception while locking achievement: {e.Message}");
+                D.Error($"Exception while locking achievement: {e.Message}");
                 return false;
             }
         }
@@ -144,7 +145,7 @@ namespace Minimoo.SteamWork
             }
             catch (Exception e)
             {
-                Debug.LogError($"Exception while checking achievement: {e.Message}");
+                D.Error($"Exception while checking achievement: {e.Message}");
                 return false;
             }
         }
@@ -164,7 +165,7 @@ namespace Minimoo.SteamWork
             }
             catch (Exception e)
             {
-                Debug.LogError($"Exception while getting achievement name: {e.Message}");
+                D.Error($"Exception while getting achievement name: {e.Message}");
                 return string.Empty;
             }
         }
@@ -184,7 +185,7 @@ namespace Minimoo.SteamWork
             }
             catch (Exception e)
             {
-                Debug.LogError($"Exception while getting achievement description: {e.Message}");
+                D.Error($"Exception while getting achievement description: {e.Message}");
                 return string.Empty;
             }
         }
@@ -205,7 +206,7 @@ namespace Minimoo.SteamWork
             }
             catch (Exception e)
             {
-                Debug.LogError($"Exception while getting all achievements: {e.Message}");
+                D.Error($"Exception while getting all achievements: {e.Message}");
             }
 
             return achievements;
@@ -233,7 +234,7 @@ namespace Minimoo.SteamWork
             }
             catch (Exception e)
             {
-                Debug.LogError($"Exception while getting unlocked achievements: {e.Message}");
+                D.Error($"Exception while getting unlocked achievements: {e.Message}");
             }
 
             return unlockedAchievements;
@@ -261,7 +262,7 @@ namespace Minimoo.SteamWork
             }
             catch (Exception e)
             {
-                Debug.LogError($"Exception while getting locked achievements: {e.Message}");
+                D.Error($"Exception while getting locked achievements: {e.Message}");
             }
 
             return lockedAchievements;
@@ -283,18 +284,18 @@ namespace Minimoo.SteamWork
                 if (result)
                 {
                     SteamUserStats.StoreStats();
-                    Debug.Log($"Achievement progress set: {statName} = {value}");
+                    D.Log($"Achievement progress set: {statName} = {value}");
                 }
                 else
                 {
-                    Debug.LogError($"Failed to set achievement progress: {statName}");
+                    D.Error($"Failed to set achievement progress: {statName}");
                 }
 
                 return result;
             }
             catch (Exception e)
             {
-                Debug.LogError($"Exception while setting achievement progress: {e.Message}");
+                D.Error($"Exception while setting achievement progress: {e.Message}");
                 return false;
             }
         }
@@ -316,7 +317,7 @@ namespace Minimoo.SteamWork
             }
             catch (Exception e)
             {
-                Debug.LogError($"Exception while getting achievement stat: {e.Message}");
+                D.Error($"Exception while getting achievement stat: {e.Message}");
                 return 0;
             }
         }
@@ -335,18 +336,18 @@ namespace Minimoo.SteamWork
                 if (result)
                 {
                     CacheAchievements(); // 캐시 새로고침
-                    Debug.Log("Achievements synced successfully");
+                    D.Log("Achievements synced successfully");
                 }
                 else
                 {
-                    Debug.LogError("Failed to sync achievements");
+                    D.Error("Failed to sync achievements");
                 }
 
                 return result;
             }
             catch (Exception e)
             {
-                Debug.LogError($"Exception while syncing achievements: {e.Message}");
+                D.Error($"Exception while syncing achievements: {e.Message}");
                 return false;
             }
         }
@@ -375,7 +376,7 @@ namespace Minimoo.SteamWork
             }
             catch (Exception e)
             {
-                Debug.LogError($"Exception while incrementing achievement progress: {e.Message}");
+                D.Error($"Exception while incrementing achievement progress: {e.Message}");
                 return 0;
             }
         }
@@ -393,12 +394,12 @@ namespace Minimoo.SteamWork
                 SteamUserStats.ResetAllStats(true);
                 SteamUserStats.StoreStats();
                 CacheAchievements();
-                Debug.Log("All achievements reset");
+                D.Log("All achievements reset");
                 return true;
             }
             catch (Exception e)
             {
-                Debug.LogError($"Exception while resetting achievements: {e.Message}");
+                D.Error($"Exception while resetting achievements: {e.Message}");
                 return false;
             }
         }

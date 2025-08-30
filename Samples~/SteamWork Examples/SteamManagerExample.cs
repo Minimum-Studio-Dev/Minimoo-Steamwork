@@ -1,5 +1,6 @@
 using UnityEngine;
 using Minimoo.SteamWork;
+using Minimoo;
 
 public class SteamManagerExample : MonoBehaviour
 {
@@ -8,13 +9,13 @@ public class SteamManagerExample : MonoBehaviour
         // SteamManager는 자동으로 초기화됩니다
         if (SteamManager.Instance.IsSteamInitialized)
         {
-            Debug.Log("Steam 초기화 성공!");
-            Debug.Log($"사용자 이름: {SteamManager.Instance.UserPersonaName}");
-            Debug.Log($"Steam ID: {SteamManager.Instance.UserSteamId}");
+            D.Log("Steam 초기화 성공!");
+            D.Log($"사용자 이름: {SteamManager.Instance.UserPersonaName}");
+            D.Log($"Steam ID: {SteamManager.Instance.UserSteamId}");
         }
         else
         {
-            Debug.LogError("Steam 초기화 실패!");
+            D.Error("Steam 초기화 실패!");
         }
     }
 
