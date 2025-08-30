@@ -43,19 +43,18 @@ namespace Minimoo.SteamWork
             return false;
 #endif
         }
+#if UNITY_STANDALONE
 
         /// <summary>
         /// 현재 사용자의 Steam ID를 가져옵니다.
         /// </summary>
         public static CSteamID GetUserSteamId()
         {
-#if UNITY_STANDALONE
             if (!isInitialized) return new CSteamID();
             return SteamManager.Instance.UserSteamId;
-#else
-            return new CSteamID();
-#endif
         }
+
+#endif
 
         /// <summary>
         /// 현재 사용자의 이름을 가져옵니다.
