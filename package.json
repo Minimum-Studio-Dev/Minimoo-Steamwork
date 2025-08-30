@@ -1,0 +1,32 @@
+{
+  "name": "com.minimumstudio.minimoo-steamwork",
+  "version": "0.1.0",
+  "displayName": "Minimoo SteamWork",
+  "description": "Steamworks.NET wrapper for Unity with easy-to-use API for Steam Login, Cloud Save, Achievements and Activity",
+  "unity": "2019.4",
+  "author": {
+    "name": "Minimum Studio",
+    "email": "contact@minimumstudio.com",
+    "url": "https://home.minimumstudio.net/"
+  },
+  "dependencies": {
+    "com.cysharp.unitask": "https://github.com/Cysharp/UniTask.git?path=src/UniTask/Assets/Plugins/UniTask",
+    "com.rlabrecque.steamworks.net": "https://github.com/rlabrecque/Steamworks.NET.git?path=/com.rlabrecque.steamworks.net"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Minimum-Studio-Dev/Minimoo-SteamWork.git"
+  },
+  "documentationUrl": "https://github.com/Minimum-Studio-Dev/Minimoo-SteamWork/wiki",
+  "changelogUrl": "https://github.com/Minimum-Studio-Dev/Minimoo-SteamWork/releases",
+  "licensesUrl": "https://github.com/Minimum-Studio-Dev/Minimoo-SteamWork/blob/main/LICENSE",
+  "keywords": [
+    "steam",
+    "steamworks",
+    "unity",
+    "login",
+    "cloud",
+    "achievements",
+    "activity"
+  ]
+}

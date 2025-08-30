@@ -1,0 +1,19 @@
+{
+    "name": "Minimoo.SteamWork.Editor",
+    "rootNamespace": "Minimoo.SteamWork.Editor",
+    "references": [
+        "Minimoo.SteamWork",
+        "com.rlabrecque.steamworks.net.editor"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

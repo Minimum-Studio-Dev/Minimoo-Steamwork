@@ -1,0 +1,165 @@
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using Steamworks;
+using UnityEngine;
+using Cysharp.Threading.Tasks;
+
+namespace Minimoo.SteamWork
+{
+    public static class SteamLogin
+    {
+        private static bool isInitialized = false;
+
+        public static void Initialize()
+        {
+            if (!SteamManager.Instance.IsSteamInitialized)
+            {
+                Debug.LogError("Steam is not initialized. Cannot initialize SteamLogin.");
+                return;
+            }
+
+            isInitialized = true;
+            Debug.Log("SteamLogin initialized successfully.");
+        }
+
+        /// <summary>
+        /// 현재 사용자가 Steam에 로그인되어 있는지 확인합니다.
+        /// </summary>
+        public static bool IsLoggedIn()
+        {
+            if (!isInitialized) return false;
+            return SteamClient.IsLoggedOn;
+        }
+
+        /// <summary>
+        /// 현재 사용자의 Steam ID를 가져옵니다.
+        /// </summary>
+        public static SteamId GetUserSteamId()
+        {
+            if (!isInitialized) return 0;
+            return SteamManager.Instance.UserSteamId;
+        }
+
+        /// <summary>
+        /// 현재 사용자의 이름을 가져옵니다.
+        /// </summary>
+        public static string GetUserName()
+        {
+            if (!isInitialized) return string.Empty;
+            return SteamManager.Instance.UserPersonaName;
+        }
+
+        /// <summary>
+        /// 현재 사용자의 아바타를 가져옵니다.
+        /// </summary>
+        public static Texture2D GetUserAvatar()
+        {
+            if (!isInitialized) return null;
+
+            try
+            {
+                var image = SteamFriends.GetLargeAvatar(SteamManager.Instance.UserSteamId);
+                if (image.HasValue)
+                {
+                    return CreateTextureFromSteamImage(image.Value);
+                }
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"Failed to get user avatar: {e.Message}");
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// 현재 사용자의 프로필 URL을 가져옵니다.
+        /// </summary>
+        public static string GetUserProfileUrl()
+        {
+            if (!isInitialized) return string.Empty;
+            return $"https://steamcommunity.com/profiles/{SteamManager.Instance.UserSteamId}";
+        }
+
+        /// <summary>
+        /// Steam 오버레이를 엽니다.
+        /// </summary>
+        public static void OpenSteamOverlay()
+        {
+            if (!isInitialized) return;
+            SteamFriends.ActivateGameOverlay("friends");
+        }
+
+        /// <summary>
+        /// Steam 친구 목록 오버레이를 엽니다.
+        /// </summary>
+        public static void OpenFriendsOverlay()
+        {
+            if (!isInitialized) return;
+            SteamFriends.ActivateGameOverlay("friends");
+        }
+
+        /// <summary>
+        /// Steam 프로필 오버레이를 엽니다.
+        /// </summary>
+        public static void OpenProfileOverlay()
+        {
+            if (!isInitialized) return;
+            SteamFriends.ActivateGameOverlayToUser("steamid", SteamManager.Instance.UserSteamId);
+        }
+
+        /// <summary>
+        /// Steam 스토어 오버레이를 엽니다.
+        /// </summary>
+        public static void OpenStoreOverlay()
+        {
+            if (!isInitialized) return;
+            SteamFriends.ActivateGameOverlayToStore(0, EOverlayToStoreFlag.k_EOverlayToStoreFlag_None);
+        }
+
+        private static Texture2D CreateTextureFromSteamImage(Image image)
+        {
+            var texture = new Texture2D((int)image.Width, (int)image.Height, TextureFormat.RGBA32, false);
+            texture.LoadRawTextureData(image.Data);
+            texture.Apply();
+            return texture;
+        }
+
+        /// <summary>
+        /// 사용자의 게임 소유권을 확인합니다.
+        /// </summary>
+        public static bool CheckGameOwnership()
+        {
+            if (!isInitialized) return false;
+
+            try
+            {
+                return SteamApps.IsSubscribed;
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"Failed to check game ownership: {e.Message}");
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// 현재 게임의 빌드 ID를 가져옵니다.
+        /// </summary>
+        public static int GetCurrentBuildId()
+        {
+            if (!isInitialized) return 0;
+
+            try
+            {
+                return SteamApps.BuildId;
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"Failed to get build ID: {e.Message}");
+                return 0;
+            }
+        }
+    }
+}
