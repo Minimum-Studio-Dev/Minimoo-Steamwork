@@ -126,23 +126,23 @@ namespace Minimoo.SteamWork
         /// <summary>
         /// 게임 초대장을 보냅니다.
         /// </summary>
-        /// <param name="friendSteamId">친구의 Steam ID</param>
+        /// <param name="friendCSteamID">친구의 Steam ID</param>
         /// <param name="connectString">연결 문자열</param>
         /// <returns>초대장 전송 성공 여부</returns>
-        public static bool InviteFriend(SteamId friendSteamId, string connectString = "")
+        public static bool InviteFriend(CSteamID friendCSteamID, string connectString = "")
         {
             if (!isInitialized) return false;
 
             try
             {
-                bool result = SteamFriends.InviteUserToGame(friendSteamId, connectString);
+                bool result = SteamFriends.InviteUserToGame(friendCSteamID, connectString);
                 if (result)
                 {
-                    Debug.Log($"Game invitation sent to friend: {friendSteamId}");
+                    Debug.Log($"Game invitation sent to friend: {friendCSteamID}");
                 }
                 else
                 {
-                    Debug.LogError($"Failed to send game invitation to friend: {friendSteamId}");
+                    Debug.LogError($"Failed to send game invitation to friend: {friendCSteamID}");
                 }
 
                 return result;
@@ -158,9 +158,9 @@ namespace Minimoo.SteamWork
         /// 친구 목록을 가져옵니다.
         /// </summary>
         /// <returns>친구 Steam ID 목록</returns>
-        public static List<SteamId> GetFriendList()
+        public static List<CSteamID> GetFriendList()
         {
-            List<SteamId> friends = new List<SteamId>();
+            List<CSteamID> friends = new List<CSteamID>();
 
             if (!isInitialized) return friends;
 
@@ -170,8 +170,8 @@ namespace Minimoo.SteamWork
 
                 for (int i = 0; i < friendCount; i++)
                 {
-                    SteamId friendId = SteamFriends.GetFriendByIndex(i, EFriendFlags.k_EFriendFlagImmediate);
-                    if (friendId.IsValid)
+                    CSteamID friendId = SteamFriends.GetFriendByIndex(i, EFriendFlags.k_EFriendFlagImmediate);
+                    if (friendId.IsValid())
                     {
                         friends.Add(friendId);
                     }
@@ -188,15 +188,15 @@ namespace Minimoo.SteamWork
         /// <summary>
         /// 친구의 이름을 가져옵니다.
         /// </summary>
-        /// <param name="friendSteamId">친구의 Steam ID</param>
+        /// <param name="friendCSteamID">친구의 Steam ID</param>
         /// <returns>친구 이름</returns>
-        public static string GetFriendName(SteamId friendSteamId)
+        public static string GetFriendName(CSteamID friendCSteamID)
         {
             if (!isInitialized) return string.Empty;
 
             try
             {
-                return SteamFriends.GetFriendPersonaName(friendSteamId);
+                return SteamFriends.GetFriendPersonaName(friendCSteamID);
             }
             catch (Exception e)
             {
@@ -208,18 +208,19 @@ namespace Minimoo.SteamWork
         /// <summary>
         /// 친구의 현재 게임 상태를 가져옵니다.
         /// </summary>
-        /// <param name="friendSteamId">친구의 Steam ID</param>
+        /// <param name="friendCSteamID">친구의 Steam ID</param>
         /// <returns>게임 상태 텍스트</returns>
-        public static string GetFriendGameStatus(SteamId friendSteamId)
+        public static string GetFriendGameStatus(CSteamID friendCSteamID)
         {
             if (!isInitialized) return string.Empty;
 
             try
             {
-                FriendGameInfo_t gameInfo = SteamFriends.GetFriendGamePlayed(friendSteamId);
-                if (gameInfo.GameID.IsValid)
+                FriendGameInfo_t gameInfo;
+                SteamFriends.GetFriendGamePlayed(friendCSteamID, out gameInfo);
+                if (gameInfo.m_gameID.IsValid())
                 {
-                    return $"{gameInfo.GameID} ({gameInfo.GameIP}:{gameInfo.GamePort})";
+                    return $"{gameInfo.m_gameID} ({gameInfo.m_unGameIP}:{gameInfo.m_usGamePort})";
                 }
                 else
                 {
@@ -236,16 +237,16 @@ namespace Minimoo.SteamWork
         /// <summary>
         /// 친구의 Rich Presence 값을 가져옵니다.
         /// </summary>
-        /// <param name="friendSteamId">친구의 Steam ID</param>
+        /// <param name="friendCSteamID">친구의 Steam ID</param>
         /// <param name="key">Rich Presence 키</param>
         /// <returns>Rich Presence 값</returns>
-        public static string GetFriendRichPresence(SteamId friendSteamId, string key)
+        public static string GetFriendRichPresence(CSteamID friendCSteamID, string key)
         {
             if (!isInitialized) return string.Empty;
 
             try
             {
-                return SteamFriends.GetFriendRichPresence(friendSteamId, key);
+                return SteamFriends.GetFriendRichPresence(friendCSteamID, key);
             }
             catch (Exception e)
             {
@@ -257,15 +258,15 @@ namespace Minimoo.SteamWork
         /// <summary>
         /// 친구의 온라인 상태를 가져옵니다.
         /// </summary>
-        /// <param name="friendSteamId">친구의 Steam ID</param>
+        /// <param name="friendCSteamID">친구의 Steam ID</param>
         /// <returns>온라인 상태</returns>
-        public static EPersonaState GetFriendPersonaState(SteamId friendSteamId)
+        public static EPersonaState GetFriendPersonaState(CSteamID friendCSteamID)
         {
             if (!isInitialized) return EPersonaState.k_EPersonaStateOffline;
 
             try
             {
-                return SteamFriends.GetFriendPersonaState(friendSteamId);
+                return SteamFriends.GetFriendPersonaState(friendCSteamID);
             }
             catch (Exception e)
             {
@@ -293,9 +294,12 @@ namespace Minimoo.SteamWork
                 }
 
                 // 추가 Rich Presence 설정
-                foreach (var kvp in activityInfo.CustomRichPresence)
+                if (activityInfo.CustomRichPresence != null)
                 {
-                    SetRichPresence(kvp.Key, kvp.Value);
+                    foreach (var kvp in activityInfo.CustomRichPresence)
+                    {
+                        SetRichPresence(kvp.Key, kvp.Value);
+                    }
                 }
 
                 Debug.Log($"Game activity set: {activityInfo.Status}");
@@ -357,13 +361,5 @@ namespace Minimoo.SteamWork
         public string DisplayText;
         public string ConnectString;
         public Dictionary<string, string> CustomRichPresence;
-
-        public ActivityInfo()
-        {
-            Status = string.Empty;
-            DisplayText = string.Empty;
-            ConnectString = string.Empty;
-            CustomRichPresence = new Dictionary<string, string>();
-        }
     }
 }

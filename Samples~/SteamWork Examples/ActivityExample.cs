@@ -89,7 +89,8 @@ public class ActivityExample : MonoBehaviour
         {
             Status = "커스텀 모드",
             DisplayText = "커스텀 게임 플레이 중",
-            ConnectString = "+connect_custom localhost:7777"
+            ConnectString = "+connect_custom localhost:7777",
+            CustomRichPresence = new Dictionary<string, string>()
         };
 
         // 커스텀 Rich Presence 추가

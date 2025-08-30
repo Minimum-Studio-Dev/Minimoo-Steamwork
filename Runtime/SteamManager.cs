@@ -24,7 +24,7 @@ namespace Minimoo.SteamWork
         }
 
         public bool IsSteamInitialized { get; private set; }
-        public SteamId UserSteamId { get; private set; }
+        public CSteamID UserSteamId { get; private set; }
         public string UserName { get; private set; }
         public string UserPersonaName { get; private set; }
 
@@ -49,11 +49,17 @@ namespace Minimoo.SteamWork
         {
             try
             {
-                SteamClient.Init(0); // 0 means use the appid from steam_appid.txt
+                // Steamworks.NET 초기화
+                if (!SteamAPI.Init())
+                {
+                    Debug.LogError("Failed to initialize Steam API");
+                    IsSteamInitialized = false;
+                    return;
+                }
 
                 IsSteamInitialized = true;
-                UserSteamId = SteamClient.SteamId;
-                UserName = SteamClient.Name;
+                UserSteamId = SteamUser.GetSteamID();
+                UserName = SteamFriends.GetPersonaName();
                 UserPersonaName = SteamFriends.GetPersonaName();
 
                 Debug.Log($"Steam initialized successfully. User: {UserPersonaName} ({UserSteamId})");
@@ -87,7 +93,7 @@ namespace Minimoo.SteamWork
 
         private void OnPersonaStateChange(PersonaStateChange_t callback)
         {
-            if (callback.m_ulSteamID == UserSteamId.Value)
+            if (callback.m_ulSteamID == UserSteamId.m_SteamID)
             {
                 UserPersonaName = SteamFriends.GetPersonaName();
                 Debug.Log($"Persona state changed: {UserPersonaName}");
@@ -98,7 +104,7 @@ namespace Minimoo.SteamWork
         {
             if (IsSteamInitialized)
             {
-                SteamClient.RunCallbacks();
+                SteamAPI.RunCallbacks();
             }
         }
 
@@ -106,7 +112,7 @@ namespace Minimoo.SteamWork
         {
             if (IsSteamInitialized)
             {
-                SteamClient.Shutdown();
+                SteamAPI.Shutdown();
                 IsSteamInitialized = false;
             }
         }

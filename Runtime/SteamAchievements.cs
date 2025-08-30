@@ -10,7 +10,7 @@ namespace Minimoo.SteamWork
     public static class SteamAchievements
     {
         private static bool isInitialized = false;
-        private static Dictionary<string, Achievement> achievementCache = new Dictionary<string, Achievement>();
+        private static Dictionary<string, bool> achievementCache = new Dictionary<string, bool>();
 
         public static void Initialize()
         {
@@ -38,7 +38,9 @@ namespace Minimoo.SteamWork
                     string achievementId = SteamUserStats.GetAchievementName(i);
                     if (!string.IsNullOrEmpty(achievementId))
                     {
-                        achievementCache[achievementId] = SteamUserStats.GetAchievement(achievementId);
+                        bool achieved;
+                        SteamUserStats.GetAchievement(achievementId, out achieved);
+                        achievementCache[achievementId] = achieved;
                     }
                 }
 
@@ -68,10 +70,7 @@ namespace Minimoo.SteamWork
                     Debug.Log($"Achievement unlocked: {achievementId}");
 
                     // 캐시 업데이트
-                    if (achievementCache.ContainsKey(achievementId))
-                    {
-                        achievementCache[achievementId] = SteamUserStats.GetAchievement(achievementId);
-                    }
+                    achievementCache[achievementId] = true;
                 }
                 else
                 {
@@ -105,10 +104,7 @@ namespace Minimoo.SteamWork
                     Debug.Log($"Achievement locked: {achievementId}");
 
                     // 캐시 업데이트
-                    if (achievementCache.ContainsKey(achievementId))
-                    {
-                        achievementCache[achievementId] = SteamUserStats.GetAchievement(achievementId);
-                    }
+                    achievementCache[achievementId] = true;
                 }
                 else
                 {
@@ -135,15 +131,16 @@ namespace Minimoo.SteamWork
 
             try
             {
-                if (achievementCache.TryGetValue(achievementId, out Achievement achievement))
+                if (achievementCache.TryGetValue(achievementId, out bool achieved))
                 {
-                    return achievement.State;
+                    return achieved;
                 }
 
                 // 캐시에 없는 경우 직접 조회
-                Achievement newAchievement = SteamUserStats.GetAchievement(achievementId);
-                achievementCache[achievementId] = newAchievement;
-                return newAchievement.State;
+                bool newAchieved;
+                SteamUserStats.GetAchievement(achievementId, out newAchieved);
+                achievementCache[achievementId] = newAchieved;
+                return newAchieved;
             }
             catch (Exception e)
             {
@@ -228,7 +225,7 @@ namespace Minimoo.SteamWork
             {
                 foreach (var kvp in achievementCache)
                 {
-                    if (kvp.Value.State)
+                    if (kvp.Value)
                     {
                         unlockedAchievements.Add(kvp.Key);
                     }
@@ -256,7 +253,7 @@ namespace Minimoo.SteamWork
             {
                 foreach (var kvp in achievementCache)
                 {
-                    if (!kvp.Value.State)
+                    if (!kvp.Value)
                     {
                         lockedAchievements.Add(kvp.Key);
                     }
@@ -313,7 +310,9 @@ namespace Minimoo.SteamWork
 
             try
             {
-                return SteamUserStats.GetStatInt(statName);
+                int value;
+                SteamUserStats.GetStat(statName, out value);
+                return value;
             }
             catch (Exception e)
             {

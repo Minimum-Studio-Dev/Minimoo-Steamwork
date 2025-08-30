@@ -29,15 +29,15 @@ namespace Minimoo.SteamWork
         public static bool IsLoggedIn()
         {
             if (!isInitialized) return false;
-            return SteamClient.IsLoggedOn;
+            return SteamUser.BLoggedOn();
         }
 
         /// <summary>
         /// 현재 사용자의 Steam ID를 가져옵니다.
         /// </summary>
-        public static SteamId GetUserSteamId()
+        public static CSteamID GetUserSteamId()
         {
-            if (!isInitialized) return 0;
+            if (!isInitialized) return new CSteamID();
             return SteamManager.Instance.UserSteamId;
         }
 
@@ -59,10 +59,10 @@ namespace Minimoo.SteamWork
 
             try
             {
-                var image = SteamFriends.GetLargeAvatar(SteamManager.Instance.UserSteamId);
-                if (image.HasValue)
+                int avatarHandle = SteamFriends.GetLargeFriendAvatar(SteamManager.Instance.UserSteamId);
+                if (avatarHandle > 0)
                 {
-                    return CreateTextureFromSteamImage(image.Value);
+                    return CreateTextureFromSteamImage(avatarHandle);
                 }
             }
             catch (Exception e)
@@ -115,15 +115,27 @@ namespace Minimoo.SteamWork
         public static void OpenStoreOverlay()
         {
             if (!isInitialized) return;
-            SteamFriends.ActivateGameOverlayToStore(0, EOverlayToStoreFlag.k_EOverlayToStoreFlag_None);
+            SteamFriends.ActivateGameOverlayToStore(new AppId_t(0), EOverlayToStoreFlag.k_EOverlayToStoreFlag_None);
         }
 
-        private static Texture2D CreateTextureFromSteamImage(Image image)
+        private static Texture2D CreateTextureFromSteamImage(int avatarHandle)
         {
-            var texture = new Texture2D((int)image.Width, (int)image.Height, TextureFormat.RGBA32, false);
-            texture.LoadRawTextureData(image.Data);
-            texture.Apply();
-            return texture;
+            uint width, height;
+            SteamUtils.GetImageSize(avatarHandle, out width, out height);
+
+            if (width == 0 || height == 0)
+                return null;
+
+            byte[] imageData = new byte[width * height * 4];
+            if (SteamUtils.GetImageRGBA(avatarHandle, imageData, (int)(width * height * 4)))
+            {
+                var texture = new Texture2D((int)width, (int)height, TextureFormat.RGBA32, false);
+                texture.LoadRawTextureData(imageData);
+                texture.Apply();
+                return texture;
+            }
+
+            return null;
         }
 
         /// <summary>
@@ -135,7 +147,7 @@ namespace Minimoo.SteamWork
 
             try
             {
-                return SteamApps.IsSubscribed;
+                return SteamApps.BIsSubscribed();
             }
             catch (Exception e)
             {
@@ -153,7 +165,7 @@ namespace Minimoo.SteamWork
 
             try
             {
-                return SteamApps.BuildId;
+                return SteamApps.GetAppBuildId();
             }
             catch (Exception e)
             {

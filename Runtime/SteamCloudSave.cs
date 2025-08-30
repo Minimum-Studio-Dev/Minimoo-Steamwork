@@ -35,7 +35,7 @@ namespace Minimoo.SteamWork
 
             try
             {
-                return SteamRemoteStorage.IsCloudEnabledForAccount && SteamRemoteStorage.IsCloudEnabledForApp;
+                return SteamRemoteStorage.IsCloudEnabledForAccount() && SteamRemoteStorage.IsCloudEnabledForApp();
             }
             catch (Exception e)
             {
@@ -59,7 +59,7 @@ namespace Minimoo.SteamWork
                 string fullFileName = fileName + SAVE_FILE_EXTENSION;
                 byte[] bytes = Encoding.UTF8.GetBytes(data);
 
-                bool result = SteamRemoteStorage.FileWrite(fullFileName, bytes);
+                bool result = SteamRemoteStorage.FileWrite(fullFileName, bytes, bytes.Length);
                 if (result)
                 {
                     Debug.Log($"Successfully saved file to Steam Cloud: {fullFileName}");
@@ -91,7 +91,7 @@ namespace Minimoo.SteamWork
             try
             {
                 string fullFileName = fileName + SAVE_FILE_EXTENSION;
-                bool result = SteamRemoteStorage.FileWrite(fullFileName, data);
+                bool result = SteamRemoteStorage.FileWrite(fullFileName, data, data.Length);
 
                 if (result)
                 {
@@ -130,9 +130,9 @@ namespace Minimoo.SteamWork
                     return null;
                 }
 
-                int fileSize = SteamRemoteStorage.GetFileSize(fullFileName);
-                byte[] data = new byte[fileSize];
-                int bytesRead = SteamRemoteStorage.FileRead(fullFileName, data, fileSize);
+                var fileSize = SteamRemoteStorage.GetFileSize(fullFileName);
+                var data = new byte[fileSize];
+                var bytesRead = SteamRemoteStorage.FileRead(fullFileName, data, fileSize);
 
                 if (bytesRead == fileSize)
                 {
@@ -259,11 +259,11 @@ namespace Minimoo.SteamWork
 
             try
             {
-                int fileCount = SteamRemoteStorage.FileCount;
+                var fileCount = SteamRemoteStorage.GetFileCount();
 
-                for (int i = 0; i < fileCount; i++)
+                for (var i = 0; i < fileCount; i++)
                 {
-                    string fileName = SteamRemoteStorage.FileName(i);
+                    var fileName = SteamRemoteStorage.GetFileNameAndSize(i, out var fileSize);
                     if (fileName.EndsWith(SAVE_FILE_EXTENSION))
                     {
                         files.Add(fileName.Substring(0, fileName.Length - SAVE_FILE_EXTENSION.Length));
@@ -288,8 +288,8 @@ namespace Minimoo.SteamWork
 
             try
             {
-                ulong totalBytes = SteamRemoteStorage.GetQuotaTotalBytes();
-                ulong availableBytes = SteamRemoteStorage.GetQuotaAvailableBytes();
+                ulong totalBytes, availableBytes;
+                SteamRemoteStorage.GetQuota(out totalBytes, out availableBytes);
                 ulong usedBytes = totalBytes - availableBytes;
 
                 return (usedBytes, totalBytes);
