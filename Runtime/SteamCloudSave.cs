@@ -12,7 +12,6 @@ namespace Minimoo.SteamWork
     public static class SteamCloudSave
     {
         private static bool isInitialized = false;
-        private const string SAVE_FILE_EXTENSION = ".sav";
 
         public static void Initialize()
         {
@@ -56,7 +55,7 @@ namespace Minimoo.SteamWork
 
             try
             {
-                string fullFileName = fileName + SAVE_FILE_EXTENSION;
+                string fullFileName = fileName;
                 byte[] bytes = Encoding.UTF8.GetBytes(data);
 
                 bool result = SteamRemoteStorage.FileWrite(fullFileName, bytes, bytes.Length);
@@ -90,7 +89,7 @@ namespace Minimoo.SteamWork
 
             try
             {
-                string fullFileName = fileName + SAVE_FILE_EXTENSION;
+                string fullFileName = fileName;
                 bool result = SteamRemoteStorage.FileWrite(fullFileName, data, data.Length);
 
                 if (result)
@@ -122,7 +121,7 @@ namespace Minimoo.SteamWork
 
             try
             {
-                string fullFileName = fileName + SAVE_FILE_EXTENSION;
+                string fullFileName = fileName;
 
                 if (!SteamRemoteStorage.FileExists(fullFileName))
                 {
@@ -164,7 +163,7 @@ namespace Minimoo.SteamWork
 
             try
             {
-                string fullFileName = fileName + SAVE_FILE_EXTENSION;
+                string fullFileName = fileName;
 
                 if (!SteamRemoteStorage.FileExists(fullFileName))
                 {
@@ -205,7 +204,7 @@ namespace Minimoo.SteamWork
 
             try
             {
-                string fullFileName = fileName + SAVE_FILE_EXTENSION;
+                string fullFileName = fileName;
                 return SteamRemoteStorage.FileExists(fullFileName);
             }
             catch (Exception e)
@@ -226,7 +225,7 @@ namespace Minimoo.SteamWork
 
             try
             {
-                string fullFileName = fileName + SAVE_FILE_EXTENSION;
+                string fullFileName = fileName;
                 bool result = SteamRemoteStorage.FileDelete(fullFileName);
 
                 if (result)
@@ -264,10 +263,7 @@ namespace Minimoo.SteamWork
                 for (var i = 0; i < fileCount; i++)
                 {
                     var fileName = SteamRemoteStorage.GetFileNameAndSize(i, out var fileSize);
-                    if (fileName.EndsWith(SAVE_FILE_EXTENSION))
-                    {
-                        files.Add(fileName.Substring(0, fileName.Length - SAVE_FILE_EXTENSION.Length));
-                    }
+                    files.Add(fileName);
                 }
             }
             catch (Exception e)
