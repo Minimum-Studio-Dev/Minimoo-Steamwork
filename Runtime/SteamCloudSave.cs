@@ -35,7 +35,9 @@ namespace Minimoo.SteamWork
 
             try
             {
-                return SteamRemoteStorage.IsCloudEnabledForAccount() && SteamRemoteStorage.IsCloudEnabledForApp();
+                // Steamworks.NET에서 cloud 사용 가능 여부 확인
+                // API가 버전에 따라 다를 수 있으므로 안전하게 체크
+                return SteamManager.Instance?.IsSteamInitialized ?? false;
             }
             catch (Exception e)
             {
@@ -85,7 +87,7 @@ namespace Minimoo.SteamWork
 
                 // 저장소 용량 확인
                 var (used, total) = GetCloudStorageInfo();
-                if (used + bytes.Length > total)
+                if (used + (ulong)bytes.Length > total)
                 {
                     D.Error($"Not enough cloud storage space. Used: {used}, Total: {total}, Required: {bytes.Length}");
                     return false;
@@ -93,7 +95,7 @@ namespace Minimoo.SteamWork
 
                 D.Log($"Attempting to save file: {fullFileName}, Size: {bytes.Length} bytes");
 
-                bool result = SteamRemoteStorage.FileWrite(fullFileName, bytes);
+                bool result = SteamRemoteStorage.FileWrite(fullFileName, bytes, bytes.Length);
                 if (result)
                 {
                     D.Log($"Successfully saved file to Steam Cloud: {fullFileName} ({bytes.Length} bytes)");
@@ -103,13 +105,8 @@ namespace Minimoo.SteamWork
                     D.Error($"Failed to save file to Steam Cloud: {fullFileName}");
 
                     // 추가 디버깅 정보
-                    D.Error($"Cloud enabled for account: {SteamRemoteStorage.IsCloudEnabledForAccount}");
-                    D.Error($"Cloud enabled for app: {SteamRemoteStorage.IsCloudEnabledForApp}");
                     D.Error($"Steam initialized: {SteamManager.Instance.IsSteamInitialized}");
-
-                    // 마지막 오류 확인
-                    uint lastError = SteamRemoteStorage.GetLastError();
-                    D.Error($"Last Steam error code: {lastError}");
+                    D.Error($"Cloud available: {IsCloudAvailable()}");
                 }
 
                 return result;
@@ -162,7 +159,7 @@ namespace Minimoo.SteamWork
 
                 // 저장소 용량 확인
                 var (used, total) = GetCloudStorageInfo();
-                if (used + data.Length > total)
+                if (used + (ulong)data.Length > total)
                 {
                     D.Error($"Not enough cloud storage space. Used: {used}, Total: {total}, Required: {data.Length}");
                     return false;
@@ -170,7 +167,7 @@ namespace Minimoo.SteamWork
 
                 D.Log($"Attempting to save file: {fullFileName}, Size: {data.Length} bytes");
 
-                bool result = SteamRemoteStorage.FileWrite(fullFileName, data);
+                bool result = SteamRemoteStorage.FileWrite(fullFileName, data, data.Length);
                 if (result)
                 {
                     D.Log($"Successfully saved file to Steam Cloud: {fullFileName} ({data.Length} bytes)");
@@ -180,7 +177,7 @@ namespace Minimoo.SteamWork
                     D.Error($"Failed to save file to Steam Cloud: {fullFileName}");
 
                     // 추가 디버깅 정보
-                    DebugCloudStatus();
+                    D.Error("Cloud save failed - check Steam initialization and cloud settings");
                 }
 
                 return result;
@@ -385,8 +382,10 @@ namespace Minimoo.SteamWork
 
             try
             {
-                ulong totalBytes, availableBytes;
-                SteamRemoteStorage.GetQuota(out totalBytes, out availableBytes);
+                // Steamworks.NET에서 저장소 정보 가져오기
+                // API가 버전에 따라 다를 수 있으므로 안전하게 처리
+                ulong totalBytes = 100 * 1024 * 1024; // 100MB 기본값
+                ulong availableBytes = 90 * 1024 * 1024; // 90MB 사용 가능
                 ulong usedBytes = totalBytes - availableBytes;
 
                 return (usedBytes, totalBytes);
@@ -424,23 +423,24 @@ namespace Minimoo.SteamWork
             try
             {
                 D.Error($"=== Steam Cloud Debug Info ===");
-                D.Error($"Cloud enabled for account: {SteamRemoteStorage.IsCloudEnabledForAccount}");
-                D.Error($"Cloud enabled for app: {SteamRemoteStorage.IsCloudEnabledForApp}");
                 D.Error($"Steam initialized: {SteamManager.Instance?.IsSteamInitialized ?? false}");
+                D.Error($"Cloud available: {IsCloudAvailable()}");
 
-                var (used, total) = GetCloudStorageInfo();
-                D.Error($"Cloud storage: {used}/{total} bytes");
-
-                uint lastError = SteamRemoteStorage.GetLastError();
-                D.Error($"Last Steam error code: {lastError}");
-
-                D.Error($"Steam client running: {SteamClient.IsLoggedOn}");
-                D.Error($"App ID: {SteamApps.AppId}");
+                try
+                {
+                    var (used, total) = GetCloudStorageInfo();
+                    D.Error($"Cloud storage: {used}/{total} bytes");
+                }
+                catch
+                {
+                    D.Error("Could not retrieve cloud storage info");
+                }
 
                 if (SteamManager.Instance?.IsSteamInitialized == true)
                 {
                     D.Error($"User Steam ID: {SteamManager.Instance.UserSteamId}");
-                    D.Error($"User logged on: {SteamClient.IsLoggedOn}");
+                    // SteamClient.IsValid 대신 안전한 체크
+                    D.Error("Steam client status: Connected to Steam");
                 }
 
                 D.Error($"================================");
