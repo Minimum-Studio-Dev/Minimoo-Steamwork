@@ -1,19 +1,25 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using Steamworks;
 using UnityEngine;
 using Cysharp.Threading.Tasks;
 using Minimoo;
+
+#if UNITY_STANDALONE
+using Steamworks;
+#endif
 
 namespace Minimoo.SteamWork
 {
     public static class SteamLogin
     {
+#if UNITY_STANDALONE
         private static bool isInitialized = false;
+#endif
 
         public static void Initialize()
         {
+#if UNITY_STANDALONE
             if (!SteamManager.Instance.IsSteamInitialized)
             {
                 D.Error("Steam is not initialized. Cannot initialize SteamLogin.");
@@ -22,6 +28,7 @@ namespace Minimoo.SteamWork
 
             isInitialized = true;
             D.Log("SteamLogin initialized successfully.");
+#endif
         }
 
         /// <summary>
@@ -29,8 +36,12 @@ namespace Minimoo.SteamWork
         /// </summary>
         public static bool IsLoggedIn()
         {
+#if UNITY_STANDALONE
             if (!isInitialized) return false;
             return SteamUser.BLoggedOn();
+#else
+            return false;
+#endif
         }
 
         /// <summary>
@@ -38,8 +49,12 @@ namespace Minimoo.SteamWork
         /// </summary>
         public static CSteamID GetUserSteamId()
         {
+#if UNITY_STANDALONE
             if (!isInitialized) return new CSteamID();
             return SteamManager.Instance.UserSteamId;
+#else
+            return new CSteamID();
+#endif
         }
 
         /// <summary>
@@ -47,8 +62,12 @@ namespace Minimoo.SteamWork
         /// </summary>
         public static string GetUserName()
         {
+#if UNITY_STANDALONE
             if (!isInitialized) return string.Empty;
             return SteamManager.Instance.UserPersonaName;
+#else
+            return string.Empty;
+#endif
         }
 
         /// <summary>
@@ -56,6 +75,7 @@ namespace Minimoo.SteamWork
         /// </summary>
         public static Texture2D GetUserAvatar()
         {
+#if UNITY_STANDALONE
             if (!isInitialized) return null;
 
             try
@@ -72,6 +92,9 @@ namespace Minimoo.SteamWork
             }
 
             return null;
+#else
+            return null;
+#endif
         }
 
         /// <summary>
@@ -79,8 +102,12 @@ namespace Minimoo.SteamWork
         /// </summary>
         public static string GetUserProfileUrl()
         {
+#if UNITY_STANDALONE
             if (!isInitialized) return string.Empty;
             return $"https://steamcommunity.com/profiles/{SteamManager.Instance.UserSteamId}";
+#else
+            return string.Empty;
+#endif
         }
 
         /// <summary>
@@ -88,8 +115,10 @@ namespace Minimoo.SteamWork
         /// </summary>
         public static void OpenSteamOverlay()
         {
+#if UNITY_STANDALONE
             if (!isInitialized) return;
             SteamFriends.ActivateGameOverlay("friends");
+#endif
         }
 
         /// <summary>
@@ -97,8 +126,10 @@ namespace Minimoo.SteamWork
         /// </summary>
         public static void OpenFriendsOverlay()
         {
+#if UNITY_STANDALONE
             if (!isInitialized) return;
             SteamFriends.ActivateGameOverlay("friends");
+#endif
         }
 
         /// <summary>
@@ -106,8 +137,10 @@ namespace Minimoo.SteamWork
         /// </summary>
         public static void OpenProfileOverlay()
         {
+#if UNITY_STANDALONE
             if (!isInitialized) return;
             SteamFriends.ActivateGameOverlayToUser("steamid", SteamManager.Instance.UserSteamId);
+#endif
         }
 
         /// <summary>
@@ -115,10 +148,13 @@ namespace Minimoo.SteamWork
         /// </summary>
         public static void OpenStoreOverlay()
         {
+#if UNITY_STANDALONE
             if (!isInitialized) return;
             SteamFriends.ActivateGameOverlayToStore(new AppId_t(0), EOverlayToStoreFlag.k_EOverlayToStoreFlag_None);
+#endif
         }
 
+#if UNITY_STANDALONE
         private static Texture2D CreateTextureFromSteamImage(int avatarHandle)
         {
             uint width, height;
@@ -138,12 +174,14 @@ namespace Minimoo.SteamWork
 
             return null;
         }
+#endif
 
         /// <summary>
         /// 사용자의 게임 소유권을 확인합니다.
         /// </summary>
         public static bool CheckGameOwnership()
         {
+#if UNITY_STANDALONE
             if (!isInitialized) return false;
 
             try
@@ -155,6 +193,9 @@ namespace Minimoo.SteamWork
                 D.Error($"Failed to check game ownership: {e.Message}");
                 return false;
             }
+#else
+            return false;
+#endif
         }
 
         /// <summary>
@@ -162,6 +203,7 @@ namespace Minimoo.SteamWork
         /// </summary>
         public static int GetCurrentBuildId()
         {
+#if UNITY_STANDALONE
             if (!isInitialized) return 0;
 
             try
@@ -173,6 +215,9 @@ namespace Minimoo.SteamWork
                 D.Error($"Failed to get build ID: {e.Message}");
                 return 0;
             }
+#else
+            return 0;
+#endif
         }
     }
 }

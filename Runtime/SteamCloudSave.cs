@@ -3,19 +3,25 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
-using Steamworks;
 using UnityEngine;
 using Cysharp.Threading.Tasks;
 using Minimoo;
+
+#if UNITY_STANDALONE
+using Steamworks;
+#endif
 
 namespace Minimoo.SteamWork
 {
     public static class SteamCloudSave
     {
+#if UNITY_STANDALONE
         private static bool isInitialized = false;
+#endif
 
         public static void Initialize()
         {
+#if UNITY_STANDALONE
             if (!SteamManager.Instance.IsSteamInitialized)
             {
                 D.Error("Steam is not initialized. Cannot initialize SteamCloudSave.");
@@ -24,6 +30,7 @@ namespace Minimoo.SteamWork
 
             isInitialized = true;
             D.Log("SteamCloudSave initialized successfully.");
+#endif
         }
 
         /// <summary>
@@ -31,6 +38,7 @@ namespace Minimoo.SteamWork
         /// </summary>
         public static bool IsCloudAvailable()
         {
+#if UNITY_STANDALONE
             if (!isInitialized) return false;
 
             try
@@ -44,6 +52,9 @@ namespace Minimoo.SteamWork
                 D.Error($"Failed to check cloud availability: {e.Message}");
                 return false;
             }
+#else
+            return false;
+#endif
         }
 
         /// <summary>
@@ -54,6 +65,7 @@ namespace Minimoo.SteamWork
         /// <returns>저장 성공 여부</returns>
         public static bool SaveFile(string fileName, string data)
         {
+#if UNITY_STANDALONE
             if (!isInitialized)
             {
                 D.Error("SteamCloudSave is not initialized!");
@@ -117,6 +129,9 @@ namespace Minimoo.SteamWork
                 D.Error($"Stack trace: {e.StackTrace}");
                 return false;
             }
+#else
+            return false;
+#endif
         }
 
         /// <summary>
@@ -127,6 +142,7 @@ namespace Minimoo.SteamWork
         /// <returns>저장 성공 여부</returns>
         public static bool SaveFile(string fileName, byte[] data)
         {
+#if UNITY_STANDALONE
             if (!isInitialized)
             {
                 D.Error("SteamCloudSave is not initialized!");
@@ -188,6 +204,9 @@ namespace Minimoo.SteamWork
                 D.Error($"Stack trace: {e.StackTrace}");
                 return false;
             }
+#else
+            return false;
+#endif
         }
 
         /// <summary>
@@ -197,6 +216,7 @@ namespace Minimoo.SteamWork
         /// <returns>로드된 데이터 (실패 시 null)</returns>
         public static string LoadFile(string fileName)
         {
+#if UNITY_STANDALONE
             if (!isInitialized)
             {
                 D.Error("SteamCloudSave is not initialized!");
@@ -248,6 +268,9 @@ namespace Minimoo.SteamWork
                 D.Error($"Stack trace: {e.StackTrace}");
                 return null;
             }
+#else
+            return null;
+#endif
         }
 
         /// <summary>
@@ -257,6 +280,7 @@ namespace Minimoo.SteamWork
         /// <returns>로드된 바이트 데이터 (실패 시 null)</returns>
         public static byte[] LoadFileBytes(string fileName)
         {
+#if UNITY_STANDALONE
             if (!isInitialized || !IsCloudAvailable()) return null;
 
             try
@@ -289,6 +313,9 @@ namespace Minimoo.SteamWork
                 D.Error($"Exception while loading file: {e.Message}");
                 return null;
             }
+#else
+            return null;
+#endif
         }
 
         /// <summary>
@@ -298,6 +325,7 @@ namespace Minimoo.SteamWork
         /// <returns>파일 존재 여부</returns>
         public static bool FileExists(string fileName)
         {
+#if UNITY_STANDALONE
             if (!isInitialized || !IsCloudAvailable()) return false;
 
             try
@@ -310,6 +338,9 @@ namespace Minimoo.SteamWork
                 D.Error($"Exception while checking file existence: {e.Message}");
                 return false;
             }
+#else
+            return false;
+#endif
         }
 
         /// <summary>
@@ -319,6 +350,7 @@ namespace Minimoo.SteamWork
         /// <returns>삭제 성공 여부</returns>
         public static bool DeleteFile(string fileName)
         {
+#if UNITY_STANDALONE
             if (!isInitialized || !IsCloudAvailable()) return false;
 
             try
@@ -342,6 +374,9 @@ namespace Minimoo.SteamWork
                 D.Error($"Exception while deleting file: {e.Message}");
                 return false;
             }
+#else
+            return false;
+#endif
         }
 
         /// <summary>
@@ -350,6 +385,7 @@ namespace Minimoo.SteamWork
         /// <returns>파일 이름 목록</returns>
         public static List<string> GetFileList()
         {
+#if UNITY_STANDALONE
             List<string> files = new List<string>();
 
             if (!isInitialized || !IsCloudAvailable()) return files;
@@ -370,6 +406,9 @@ namespace Minimoo.SteamWork
             }
 
             return files;
+#else
+            return new List<string>();
+#endif
         }
 
         /// <summary>
@@ -378,6 +417,7 @@ namespace Minimoo.SteamWork
         /// <returns>(사용된 바이트, 총 바이트) 튜플</returns>
         public static (ulong used, ulong total) GetCloudStorageInfo()
         {
+#if UNITY_STANDALONE
             if (!isInitialized || !IsCloudAvailable()) return (0, 0);
 
             try
@@ -395,6 +435,9 @@ namespace Minimoo.SteamWork
                 D.Error($"Exception while getting cloud storage info: {e.Message}");
                 return (0, 0);
             }
+#else
+            return (0, 0);
+#endif
         }
 
         /// <summary>
@@ -404,10 +447,14 @@ namespace Minimoo.SteamWork
         /// <returns>동기화 성공 여부</returns>
         public static bool SyncPlayerPrefsToCloud(string key)
         {
+#if UNITY_STANDALONE
             if (!PlayerPrefs.HasKey(key)) return false;
 
             string value = PlayerPrefs.GetString(key);
             return SaveFile($"PlayerPrefs_{key}", value);
+#else
+            return false;
+#endif
         }
 
         /// <summary>
@@ -415,6 +462,7 @@ namespace Minimoo.SteamWork
         /// </summary>
         /// <param name="key">PlayerPrefs 키</param>
         /// <returns>동기화 성공 여부</returns>
+#if UNITY_STANDALONE
         /// <summary>
         /// Steam Cloud 상태를 디버깅합니다.
         /// </summary>
@@ -450,9 +498,11 @@ namespace Minimoo.SteamWork
                 D.Error($"Exception in DebugCloudStatus: {e.Message}");
             }
         }
+#endif
 
         public static bool SyncPlayerPrefsFromCloud(string key)
         {
+#if UNITY_STANDALONE
             string value = LoadFile($"PlayerPrefs_{key}");
             if (value != null)
             {
@@ -461,6 +511,9 @@ namespace Minimoo.SteamWork
                 return true;
             }
             return false;
+#else
+            return false;
+#endif
         }
     }
 }

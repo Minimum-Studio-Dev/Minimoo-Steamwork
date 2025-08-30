@@ -1,9 +1,12 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using Steamworks;
 using UnityEngine;
 using Minimoo;
+
+#if UNITY_STANDALONE
+using Steamworks;
+#endif
 
 namespace Minimoo.SteamWork
 {
@@ -24,13 +27,86 @@ namespace Minimoo.SteamWork
             }
         }
 
-        public bool IsSteamInitialized { get; private set; }
-        public CSteamID UserSteamId { get; private set; }
-        public string UserName { get; private set; }
-        public string UserPersonaName { get; private set; }
+        public bool IsSteamInitialized
+        {
+            get
+            {
+#if UNITY_STANDALONE
+                return _isSteamInitialized;
+#else
+                return false;
+#endif
+            }
+            private set
+            {
+#if UNITY_STANDALONE
+                _isSteamInitialized = value;
+#endif
+            }
+        }
 
+        public CSteamID UserSteamId
+        {
+            get
+            {
+#if UNITY_STANDALONE
+                return _userSteamId;
+#else
+                return default(CSteamID);
+#endif
+            }
+            private set
+            {
+#if UNITY_STANDALONE
+                _userSteamId = value;
+#endif
+            }
+        }
+
+        public string UserName
+        {
+            get
+            {
+#if UNITY_STANDALONE
+                return _userName;
+#else
+                return string.Empty;
+#endif
+            }
+            private set
+            {
+#if UNITY_STANDALONE
+                _userName = value;
+#endif
+            }
+        }
+
+        public string UserPersonaName
+        {
+            get
+            {
+#if UNITY_STANDALONE
+                return _userPersonaName;
+#else
+                return string.Empty;
+#endif
+            }
+            private set
+            {
+#if UNITY_STANDALONE
+                _userPersonaName = value;
+#endif
+            }
+        }
+
+#if UNITY_STANDALONE
+        private bool _isSteamInitialized = false;
+        private CSteamID _userSteamId;
+        private string _userName = string.Empty;
+        private string _userPersonaName = string.Empty;
         private Callback<GameOverlayActivated_t> gameOverlayActivatedCallback;
         private Callback<PersonaStateChange_t> personaStateChangeCallback;
+#endif
 
         private void Awake()
         {
@@ -43,9 +119,12 @@ namespace Minimoo.SteamWork
             instance = this;
             DontDestroyOnLoad(gameObject);
 
+#if UNITY_STANDALONE
             InitializeSteam();
+#endif
         }
 
+#if UNITY_STANDALONE
         private void InitializeSteam()
         {
             try
@@ -54,11 +133,11 @@ namespace Minimoo.SteamWork
                 if (!SteamAPI.Init())
                 {
                     D.Error("Failed to initialize Steam API");
-                    IsSteamInitialized = false;
+                    _isSteamInitialized = false;
                     return;
                 }
 
-                IsSteamInitialized = true;
+                _isSteamInitialized = true;
                 UserSteamId = SteamUser.GetSteamID();
                 UserName = SteamFriends.GetPersonaName();
                 UserPersonaName = SteamFriends.GetPersonaName();
@@ -73,6 +152,7 @@ namespace Minimoo.SteamWork
                 SteamCloudSave.Initialize();
                 SteamAchievements.Initialize();
                 SteamActivity.Initialize();
+                SteamLeaderboards.Initialize();
             }
             catch (Exception e)
             {
@@ -80,13 +160,17 @@ namespace Minimoo.SteamWork
                 IsSteamInitialized = false;
             }
         }
+#endif
 
+#if UNITY_STANDALONE
         private void SetupCallbacks()
         {
             gameOverlayActivatedCallback = Callback<GameOverlayActivated_t>.Create(OnGameOverlayActivated);
             personaStateChangeCallback = Callback<PersonaStateChange_t>.Create(OnPersonaStateChange);
         }
+#endif
 
+#if UNITY_STANDALONE
         private void OnGameOverlayActivated(GameOverlayActivated_t callback)
         {
             D.Log($"Steam overlay activated: {callback.m_bActive}");
@@ -103,7 +187,7 @@ namespace Minimoo.SteamWork
 
         private void Update()
         {
-            if (IsSteamInitialized)
+            if (_isSteamInitialized)
             {
                 SteamAPI.RunCallbacks();
             }
@@ -111,13 +195,15 @@ namespace Minimoo.SteamWork
 
         private void OnApplicationQuit()
         {
-            if (IsSteamInitialized)
+            if (_isSteamInitialized)
             {
                 SteamAPI.Shutdown();
-                IsSteamInitialized = false;
+                _isSteamInitialized = false;
             }
         }
+#endif
 
+#if UNITY_STANDALONE
         private void OnDestroy()
         {
             if (instance == this)
@@ -125,5 +211,6 @@ namespace Minimoo.SteamWork
                 instance = null;
             }
         }
+#endif
     }
 }

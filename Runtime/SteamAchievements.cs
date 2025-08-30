@@ -1,20 +1,26 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using Steamworks;
 using UnityEngine;
 using Cysharp.Threading.Tasks;
 using Minimoo;
+
+#if UNITY_STANDALONE
+using Steamworks;
+#endif
 
 namespace Minimoo.SteamWork
 {
     public static class SteamAchievements
     {
+#if UNITY_STANDALONE
         private static bool isInitialized = false;
         private static Dictionary<string, bool> achievementCache = new Dictionary<string, bool>();
+#endif
 
         public static void Initialize()
         {
+#if UNITY_STANDALONE
             if (!SteamManager.Instance.IsSteamInitialized)
             {
                 D.Error("Steam is not initialized. Cannot initialize SteamAchievements.");
@@ -24,8 +30,10 @@ namespace Minimoo.SteamWork
             isInitialized = true;
             CacheAchievements();
             D.Log("SteamAchievements initialized successfully.");
+#endif
         }
 
+#if UNITY_STANDALONE
         private static void CacheAchievements()
         {
             achievementCache.Clear();
@@ -52,6 +60,7 @@ namespace Minimoo.SteamWork
                 D.Error($"Failed to cache achievements: {e.Message}");
             }
         }
+#endif
 
         /// <summary>
         /// 업적을 잠금 해제합니다.
@@ -60,6 +69,7 @@ namespace Minimoo.SteamWork
         /// <returns>업적 해제 성공 여부</returns>
         public static bool UnlockAchievement(string achievementId)
         {
+#if UNITY_STANDALONE
             if (!isInitialized) return false;
 
             try
@@ -85,6 +95,9 @@ namespace Minimoo.SteamWork
                 D.Error($"Exception while unlocking achievement: {e.Message}");
                 return false;
             }
+#else
+            return false;
+#endif
         }
 
         /// <summary>
@@ -94,6 +107,7 @@ namespace Minimoo.SteamWork
         /// <returns>업적 잠금 성공 여부</returns>
         public static bool LockAchievement(string achievementId)
         {
+#if UNITY_STANDALONE
             if (!isInitialized) return false;
 
             try
@@ -105,7 +119,7 @@ namespace Minimoo.SteamWork
                     D.Log($"Achievement locked: {achievementId}");
 
                     // 캐시 업데이트
-                    achievementCache[achievementId] = true;
+                    achievementCache[achievementId] = false;
                 }
                 else
                 {
@@ -119,6 +133,9 @@ namespace Minimoo.SteamWork
                 D.Error($"Exception while locking achievement: {e.Message}");
                 return false;
             }
+#else
+            return false;
+#endif
         }
 
         /// <summary>
@@ -128,6 +145,7 @@ namespace Minimoo.SteamWork
         /// <returns>업적 잠금 해제 상태</returns>
         public static bool IsAchievementUnlocked(string achievementId)
         {
+#if UNITY_STANDALONE
             if (!isInitialized) return false;
 
             try
@@ -148,6 +166,9 @@ namespace Minimoo.SteamWork
                 D.Error($"Exception while checking achievement: {e.Message}");
                 return false;
             }
+#else
+            return false;
+#endif
         }
 
         /// <summary>
@@ -157,6 +178,7 @@ namespace Minimoo.SteamWork
         /// <returns>업적 표시 이름</returns>
         public static string GetAchievementDisplayName(string achievementId)
         {
+#if UNITY_STANDALONE
             if (!isInitialized) return string.Empty;
 
             try
@@ -168,6 +190,9 @@ namespace Minimoo.SteamWork
                 D.Error($"Exception while getting achievement name: {e.Message}");
                 return string.Empty;
             }
+#else
+            return string.Empty;
+#endif
         }
 
         /// <summary>
@@ -177,6 +202,7 @@ namespace Minimoo.SteamWork
         /// <returns>업적 설명</returns>
         public static string GetAchievementDescription(string achievementId)
         {
+#if UNITY_STANDALONE
             if (!isInitialized) return string.Empty;
 
             try
@@ -188,6 +214,9 @@ namespace Minimoo.SteamWork
                 D.Error($"Exception while getting achievement description: {e.Message}");
                 return string.Empty;
             }
+#else
+            return string.Empty;
+#endif
         }
 
         /// <summary>
@@ -196,6 +225,7 @@ namespace Minimoo.SteamWork
         /// <returns>업적 ID 목록</returns>
         public static List<string> GetAllAchievements()
         {
+#if UNITY_STANDALONE
             List<string> achievements = new List<string>();
 
             if (!isInitialized) return achievements;
@@ -210,6 +240,9 @@ namespace Minimoo.SteamWork
             }
 
             return achievements;
+#else
+            return new List<string>();
+#endif
         }
 
         /// <summary>
@@ -218,6 +251,7 @@ namespace Minimoo.SteamWork
         /// <returns>잠금 해제된 업적 ID 목록</returns>
         public static List<string> GetUnlockedAchievements()
         {
+#if UNITY_STANDALONE
             List<string> unlockedAchievements = new List<string>();
 
             if (!isInitialized) return unlockedAchievements;
@@ -238,6 +272,9 @@ namespace Minimoo.SteamWork
             }
 
             return unlockedAchievements;
+#else
+            return new List<string>();
+#endif
         }
 
         /// <summary>
@@ -246,6 +283,7 @@ namespace Minimoo.SteamWork
         /// <returns>잠금된 업적 ID 목록</returns>
         public static List<string> GetLockedAchievements()
         {
+#if UNITY_STANDALONE
             List<string> lockedAchievements = new List<string>();
 
             if (!isInitialized) return lockedAchievements;
@@ -266,6 +304,9 @@ namespace Minimoo.SteamWork
             }
 
             return lockedAchievements;
+#else
+            return new List<string>();
+#endif
         }
 
         /// <summary>
@@ -276,6 +317,7 @@ namespace Minimoo.SteamWork
         /// <returns>설정 성공 여부</returns>
         public static bool SetAchievementProgress(string statName, int value)
         {
+#if UNITY_STANDALONE
             if (!isInitialized) return false;
 
             try
@@ -298,6 +340,9 @@ namespace Minimoo.SteamWork
                 D.Error($"Exception while setting achievement progress: {e.Message}");
                 return false;
             }
+#else
+            return false;
+#endif
         }
 
         /// <summary>
@@ -307,6 +352,7 @@ namespace Minimoo.SteamWork
         /// <returns>통계 값</returns>
         public static int GetAchievementStat(string statName)
         {
+#if UNITY_STANDALONE
             if (!isInitialized) return 0;
 
             try
@@ -320,6 +366,9 @@ namespace Minimoo.SteamWork
                 D.Error($"Exception while getting achievement stat: {e.Message}");
                 return 0;
             }
+#else
+            return 0;
+#endif
         }
 
         /// <summary>
@@ -328,6 +377,7 @@ namespace Minimoo.SteamWork
         /// <returns>동기화 성공 여부</returns>
         public static bool ForceSyncAchievements()
         {
+#if UNITY_STANDALONE
             if (!isInitialized) return false;
 
             try
@@ -350,6 +400,9 @@ namespace Minimoo.SteamWork
                 D.Error($"Exception while syncing achievements: {e.Message}");
                 return false;
             }
+#else
+            return false;
+#endif
         }
 
         /// <summary>
@@ -360,6 +413,7 @@ namespace Minimoo.SteamWork
         /// <returns>새로운 값</returns>
         public static int IncrementAchievementProgress(string statName, int increment)
         {
+#if UNITY_STANDALONE
             if (!isInitialized) return 0;
 
             try
@@ -379,6 +433,9 @@ namespace Minimoo.SteamWork
                 D.Error($"Exception while incrementing achievement progress: {e.Message}");
                 return 0;
             }
+#else
+            return 0;
+#endif
         }
 
         /// <summary>
@@ -387,6 +444,7 @@ namespace Minimoo.SteamWork
         /// <returns>리셋 성공 여부</returns>
         public static bool ResetAllAchievements()
         {
+#if UNITY_STANDALONE
             if (!isInitialized) return false;
 
             try
@@ -402,6 +460,9 @@ namespace Minimoo.SteamWork
                 D.Error($"Exception while resetting achievements: {e.Message}");
                 return false;
             }
+#else
+            return false;
+#endif
         }
     }
 }
