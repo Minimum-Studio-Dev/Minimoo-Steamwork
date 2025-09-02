@@ -119,6 +119,35 @@ namespace Minimoo.SteamWork
 #endif
         }
 
+        private void OnDisable()
+        {
+#if UNITY_STANDALONE
+            Shutdown();
+#endif
+        }
+
+        private void OnDestroy()
+        {
+#if UNITY_STANDALONE
+            if (instance == this)
+            {
+                instance = null;
+            }
+
+            Shutdown();
+#endif
+        }
+
+#if UNITY_STANDALONE
+         private void Update()
+        {
+            if (_isSteamInitialized)
+            {
+                SteamAPI.RunCallbacks();
+            }
+        }
+#endif
+
 #if UNITY_STANDALONE
         private void InitializeSteam()
         {
@@ -179,16 +208,9 @@ namespace Minimoo.SteamWork
                 D.Log($"Persona state changed: {UserPersonaName}");
             }
         }
-
-        private void Update()
-        {
-            if (_isSteamInitialized)
-            {
-                SteamAPI.RunCallbacks();
-            }
-        }
-
-        private void OnApplicationQuit()
+#endif
+     
+        public void Shutdown()
         {
             if (_isSteamInitialized)
             {
@@ -196,16 +218,6 @@ namespace Minimoo.SteamWork
                 _isSteamInitialized = false;
             }
         }
-#endif
 
-#if UNITY_STANDALONE
-        private void OnDestroy()
-        {
-            if (instance == this)
-            {
-                instance = null;
-            }
-        }
-#endif
     }
 }
