@@ -212,11 +212,13 @@ namespace Minimoo.SteamWork
      
         public void Shutdown()
         {
+#if UNITY_STANDALONE 
             if (_isSteamInitialized)
             {
                 SteamAPI.Shutdown();
                 _isSteamInitialized = false;
             }
+#endif
         }
 
     }
