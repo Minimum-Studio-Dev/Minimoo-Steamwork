@@ -101,7 +101,7 @@ namespace Minimoo.SteamWork
 
 #if UNITY_STANDALONE
 #if UNITY_EDITOR
-            if (Application.isPlaying)
+            if (Application.isPlaying && SteamManagerTestMode.IsEnabled)
 #endif
             {
                 InitializeSteam();
@@ -141,7 +141,7 @@ namespace Minimoo.SteamWork
          private void Update()
         {
 #if UNITY_EDITOR
-            if (!Application.isPlaying) return;
+            if (!Application.isPlaying || !SteamManagerTestMode.IsEnabled) return;
 #endif
             if (_isSteamInitialized)
             {
