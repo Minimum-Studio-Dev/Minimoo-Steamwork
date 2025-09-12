@@ -236,7 +236,7 @@ namespace Minimoo.SteamWork
 #if UNITY_EDITOR
         private void OnPlayModeStateChanged(PlayModeStateChange state)
         {
-            if (state == PlayModeStateChange.ExitedPlayMode)
+            if (state == PlayModeStateChange.ExitingPlayMode)
             {
                 D.Log("Exiting play mode, shutting down Steam");
                 Shutdown();
