@@ -8,6 +8,10 @@ using Minimoo;
 using Steamworks;
 #endif
 
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
+
 namespace Minimoo.SteamWork
 {
     public class SteamManager : MonoBehaviour
@@ -114,6 +118,10 @@ namespace Minimoo.SteamWork
             instance = this;
             DontDestroyOnLoad(gameObject);
 
+#if UNITY_EDITOR
+            EditorApplication.playModeStateChanged += OnPlayModeStateChanged;
+#endif
+
 #if UNITY_STANDALONE
             InitializeSteam();
 #endif
@@ -128,6 +136,10 @@ namespace Minimoo.SteamWork
 
         private void OnDestroy()
         {
+#if UNITY_EDITOR
+            EditorApplication.playModeStateChanged -= OnPlayModeStateChanged;
+#endif
+
 #if UNITY_STANDALONE
             if (instance == this)
             {
@@ -212,7 +224,7 @@ namespace Minimoo.SteamWork
      
         public void Shutdown()
         {
-#if UNITY_STANDALONE 
+#if UNITY_STANDALONE
             if (_isSteamInitialized)
             {
                 SteamAPI.Shutdown();
@@ -220,6 +232,17 @@ namespace Minimoo.SteamWork
             }
 #endif
         }
+
+#if UNITY_EDITOR
+        private void OnPlayModeStateChanged(PlayModeStateChange state)
+        {
+            if (state == PlayModeStateChange.ExitedPlayMode)
+            {
+                D.Log("Exiting play mode, shutting down Steam");
+                Shutdown();
+            }
+        }
+#endif
 
     }
 }
