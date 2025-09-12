@@ -123,14 +123,24 @@ namespace Minimoo.SteamWork
 #endif
 
 #if UNITY_STANDALONE
-            InitializeSteam();
+#if UNITY_EDITOR
+            if (Application.isPlaying)
+#endif
+            {
+                InitializeSteam();
+            }
 #endif
         }
 
         private void OnDisable()
         {
 #if UNITY_STANDALONE
-            Shutdown();
+#if UNITY_EDITOR
+            if (Application.isPlaying)
+#endif
+            {
+                Shutdown();
+            }
 #endif
         }
 
@@ -146,13 +156,21 @@ namespace Minimoo.SteamWork
                 instance = null;
             }
 
-            Shutdown();
+#if UNITY_EDITOR
+            if (Application.isPlaying)
+#endif
+            {
+                Shutdown();
+            }
 #endif
         }
 
 #if UNITY_STANDALONE
          private void Update()
         {
+#if UNITY_EDITOR
+            if (!Application.isPlaying) return;
+#endif
             if (_isSteamInitialized)
             {
                 SteamAPI.RunCallbacks();
