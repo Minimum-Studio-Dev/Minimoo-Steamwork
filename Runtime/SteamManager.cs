@@ -14,23 +14,8 @@ using UnityEditor;
 
 namespace Minimoo.SteamWork
 {
-    public class SteamManager : MonoBehaviour
+    public class SteamManager : Singleton<SteamManager>
     {
-        private static SteamManager instance;
-        public static SteamManager Instance
-        {
-            get
-            {
-                if (instance == null)
-                {
-                    var go = new GameObject("SteamManager");
-                    instance = go.AddComponent<SteamManager>();
-                    DontDestroyOnLoad(go);
-                }
-                return instance;
-            }
-        }
-
         public bool IsSteamInitialized
         {
             get
@@ -107,17 +92,9 @@ namespace Minimoo.SteamWork
         private Callback<PersonaStateChange_t> personaStateChangeCallback;
 #endif
 
-        private void Awake()
+        protected override void Awake()
         {
-            if (instance != null && instance != this)
-            {
-                Destroy(gameObject);
-                return;
-            }
-
-            instance = this;
-            DontDestroyOnLoad(gameObject);
-
+            base.Awake();
 #if UNITY_EDITOR
             EditorApplication.playModeStateChanged += OnPlayModeStateChanged;
 #endif
@@ -151,11 +128,6 @@ namespace Minimoo.SteamWork
 #endif
 
 #if UNITY_STANDALONE
-            if (instance == this)
-            {
-                instance = null;
-            }
-
 #if UNITY_EDITOR
             if (Application.isPlaying)
 #endif
