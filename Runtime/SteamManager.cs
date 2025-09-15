@@ -8,25 +8,14 @@ using Minimoo;
 using Steamworks;
 #endif
 
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
+
 namespace Minimoo.SteamWork
 {
-    public class SteamManager : MonoBehaviour
+    public class SteamManager : Singleton<SteamManager>
     {
-        private static SteamManager instance;
-        public static SteamManager Instance
-        {
-            get
-            {
-                if (instance == null)
-                {
-                    var go = new GameObject("SteamManager");
-                    instance = go.AddComponent<SteamManager>();
-                    DontDestroyOnLoad(go);
-                }
-                return instance;
-            }
-        }
-
         public bool IsSteamInitialized
         {
             get
@@ -103,44 +92,57 @@ namespace Minimoo.SteamWork
         private Callback<PersonaStateChange_t> personaStateChangeCallback;
 #endif
 
-        private void Awake()
+        protected override void Awake()
         {
-            if (instance != null && instance != this)
-            {
-                Destroy(gameObject);
-                return;
-            }
-
-            instance = this;
-            DontDestroyOnLoad(gameObject);
+            base.Awake();
+#if UNITY_EDITOR
+            EditorApplication.playModeStateChanged += OnPlayModeStateChanged;
+#endif
 
 #if UNITY_STANDALONE
-            InitializeSteam();
+#if UNITY_EDITOR
+            if (Application.isPlaying && SteamManagerTestMode.IsEnabled)
+#endif
+            {
+                InitializeSteam();
+            }
 #endif
         }
 
         private void OnDisable()
         {
 #if UNITY_STANDALONE
-            Shutdown();
+#if UNITY_EDITOR
+            if (Application.isPlaying)
+#endif
+            {
+                Shutdown();
+            }
 #endif
         }
 
         private void OnDestroy()
         {
-#if UNITY_STANDALONE
-            if (instance == this)
-            {
-                instance = null;
-            }
+#if UNITY_EDITOR
+            EditorApplication.playModeStateChanged -= OnPlayModeStateChanged;
+#endif
 
-            Shutdown();
+#if UNITY_STANDALONE
+#if UNITY_EDITOR
+            if (Application.isPlaying)
+#endif
+            {
+                Shutdown();
+            }
 #endif
         }
 
 #if UNITY_STANDALONE
          private void Update()
         {
+#if UNITY_EDITOR
+            if (!Application.isPlaying || !SteamManagerTestMode.IsEnabled) return;
+#endif
             if (_isSteamInitialized)
             {
                 SteamAPI.RunCallbacks();
@@ -213,7 +215,7 @@ namespace Minimoo.SteamWork
      
         public void Shutdown()
         {
-#if UNITY_STANDALONE 
+#if UNITY_STANDALONE
             if (_isSteamInitialized)
             {
                 SteamAPI.Shutdown();
@@ -221,6 +223,17 @@ namespace Minimoo.SteamWork
             }
 #endif
         }
+
+#if UNITY_EDITOR
+        private void OnPlayModeStateChanged(PlayModeStateChange state)
+        {
+            if (state == PlayModeStateChange.ExitingPlayMode)
+            {
+                D.Log("Exiting play mode, shutting down Steam");
+                Shutdown();
+            }
+        }
+#endif
 
     }
 }

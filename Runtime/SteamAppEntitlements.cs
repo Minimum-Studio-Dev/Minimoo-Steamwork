@@ -107,18 +107,10 @@ namespace Minimoo.SteamWork
             try
             {
                 var steamAppId = new AppId_t(appId);
-                bool result = SteamApps.InstallDLC(steamAppId);
+                SteamApps.InstallDLC(steamAppId);
 
-                if (result)
-                {
-                    D.Log($"DLC 설치 요청 성공: {appId}");
-                }
-                else
-                {
-                    D.Error($"DLC 설치 요청 실패: {appId}");
-                }
-
-                return result;
+                D.Log($"DLC 설치 요청 완료: {appId}");
+                return true;
             }
             catch (Exception e)
             {
