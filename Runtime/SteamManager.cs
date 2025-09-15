@@ -177,6 +177,7 @@ namespace Minimoo.SteamWork
                 SteamAchievements.Initialize();
                 SteamActivity.Initialize();
                 SteamLeaderboards.Initialize();
+                SteamAppEntitlements.Initialize();
             }
             catch (Exception e)
             {

@@ -1,6 +1,6 @@
 # Minimoo SteamWork
 
-Unity Package Manager용 Steamworks.NET wrapper 패키지입니다. Steam 로그인, Cloud Save, Achievement, Activity 기능을 쉽고 간편하게 사용할 수 있습니다.
+Unity Package Manager용 Steamworks.NET wrapper 패키지입니다. Steam 로그인, Cloud Save, Achievement, Activity, App Entitlements 기능을 쉽고 간편하게 사용할 수 있습니다.
 
 ## 기능
 
@@ -8,6 +8,7 @@ Unity Package Manager용 Steamworks.NET wrapper 패키지입니다. Steam 로그
 - ✅ **Steam Cloud Save**: 게임 데이터 클라우드 저장
 - ✅ **Steam Achievement**: 업적 시스템 관리
 - ✅ **Steam Activity**: Rich Presence 및 친구 상태 표시
+- ✅ **Steam App Entitlements**: 앱 구매 권한 및 DLC 관리
 
 ## 설치 방법
 
@@ -159,6 +160,53 @@ public class ActivityExample : MonoBehaviour
 }
 ```
 
+### App Entitlements (구매 권한 및 DLC)
+
+```csharp
+using Minimoo.SteamWork;
+
+public class EntitlementsExample : MonoBehaviour
+{
+    private void CheckAppOwnership()
+    {
+        // 현재 앱의 구독 상태 확인
+        bool isSubscribed = SteamAppEntitlements.IsCurrentAppSubscribed();
+        Debug.Log($"앱 구독 상태: {isSubscribed}");
+
+        // 특정 DLC 소유권 확인
+        uint dlcAppId = 1234567890; // DLC App ID
+        bool ownsDlc = SteamAppEntitlements.IsAppOwned(dlcAppId);
+        Debug.Log($"DLC 소유: {ownsDlc}");
+    }
+
+    private void CheckDlcAndInstall()
+    {
+        uint dlcAppId = 1234567890;
+
+        // DLC 설치 상태 확인
+        if (SteamAppEntitlements.IsDlcInstalled(dlcAppId))
+        {
+            Debug.Log("DLC가 이미 설치되어 있습니다.");
+        }
+        else
+        {
+            // DLC 설치 요청
+            SteamAppEntitlements.InstallDlc(dlcAppId);
+            Debug.Log("DLC 설치 요청을 보냈습니다.");
+        }
+    }
+
+    private void CheckAppSubscription()
+    {
+        uint appId = 1234567890; // 다른 앱 ID
+
+        // 특정 앱 구독 상태 확인
+        bool isSubscribed = SteamAppEntitlements.IsSubscribedApp(appId);
+        Debug.Log($"앱 {appId} 구독 상태: {isSubscribed}");
+    }
+}
+```
+
 ## API 레퍼런스
 
 ### SteamManager
@@ -193,6 +241,15 @@ public class ActivityExample : MonoBehaviour
 - `SetLobbyActivity(current, max)`: 로비 상태
 - `GetFriendList()`: 친구 목록
 
+### SteamAppEntitlements
+- `IsSubscribedApp(appId)`: 특정 앱 구독 상태 확인
+- `IsDlcInstalled(appId)`: DLC 설치 상태 확인
+- `InstallDlc(appId)`: DLC 설치 요청
+- `IsCurrentAppSubscribed()`: 현재 앱 구독 상태 확인
+- `IsAppOwned(appId)`: 앱 소유권 확인
+- `IsAppFree()`: 앱 무료 여부 확인
+- `ClearEntitlementCache()`: 캐시 클리어
+
 ## 샘플 코드
 
 `Samples~/SteamWork Examples/` 폴더에 각 기능별 완전한 예제 코드가 포함되어 있습니다:
@@ -201,6 +258,7 @@ public class ActivityExample : MonoBehaviour
 - `CloudSaveExample.cs`: 클라우드 저장/로딩
 - `AchievementExample.cs`: 업적 관리
 - `ActivityExample.cs`: Rich Presence 설정
+- `SteamAppEntitlementsExample.cs`: 앱 구매 권한 및 DLC 관리
 
 ## 요구사항
 
