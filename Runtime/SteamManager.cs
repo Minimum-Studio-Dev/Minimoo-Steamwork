@@ -86,9 +86,8 @@ namespace Minimoo.SteamWork
 
         /// <summary>
         /// Steam overlay 활성화 상태가 변경될 때 호출되는 이벤트
-        /// 파라미터: overlay가 활성화되었는지 여부 (true: 활성화, false: 비활성화)
         /// </summary>
-        public UnityAction<bool> OnSteamOverlayStateChanged;
+        public UnityAction OnSteamOverlayStateChanged;
 
 #if UNITY_STANDALONE
         private bool _isSteamInitialized = false;
@@ -207,11 +206,10 @@ namespace Minimoo.SteamWork
 #if UNITY_STANDALONE
         private void OnGameOverlayActivated(GameOverlayActivated_t callback)
         {
-            bool isActive = callback.m_bActive;
-            D.Log($"Steam overlay activated: {isActive}");
+            D.Log($"Steam overlay activated");
 
             // Steam overlay 상태 변경 이벤트 호출
-            OnSteamOverlayStateChanged?.Invoke(isActive);
+            OnSteamOverlayStateChanged?.Invoke();
         }
 
         private void OnPersonaStateChange(PersonaStateChange_t callback)
